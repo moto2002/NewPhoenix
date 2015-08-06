@@ -214,3 +214,19 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+*.csproj
+*.sln
+
+*.info
+*.bakert
+*.bin
+*.stamp
+*.mdb
+*.dll
+*.asset
+Client/Library/ShaderCache.db
+Client/Library/expandedItems
+*.dwlt
+Client/Library/BuildPlayer.prefs
+Client/Library/
+Client/Temp/UnityLockfile
