@@ -8,10 +8,13 @@ public class FightMgr : MonoBehaviour
     public static FightMgr Instance { get; private set; }
     public Transform EnemyParent;
     public Transform PlayerParent;
+    public GridData[,] EnemyGrids { get { return this.m_GridComp.EnemyGrids; } }
+    public GridData[,] PlayerGrids { get { return this.m_GridComp.PlayerGrids; } }
+    public Dictionary<ActorBevBase, GridData> EnemyBattleArray { get; private set; }//敌人阵容
+    public Dictionary<ActorBevBase, GridData> PlayerBattleArray { get; private set; }//玩家阵容
 
-    private FightGridComponent m_GridComp;//网格
-    private Dictionary<ActorBevBase, GridData> m_EnemyBattleArray;//敌人阵容
-    private Dictionary<ActorBevBase, GridData> m_PlayerBattleArray;//玩家阵容
+         private FightGridComponent m_GridComp;//网格
+   
     private byte m_RandCount;//回合数
     private bool m_GameOver;//是否游戏结束
     private ActorBevBase m_CurMovesActor;
@@ -28,6 +31,7 @@ public class FightMgr : MonoBehaviour
     {
         this.InitPlayer();
         this.InitEnemy();
+        UIController.Instance.OpenPanel(UIPanelType.FightPanel);
         StartCoroutine(this.StartGame());
     }
 
@@ -40,7 +44,7 @@ public class FightMgr : MonoBehaviour
     /// </summary>
     private void InitPlayer()
     {
-        this.m_PlayerBattleArray = new Dictionary<ActorBevBase, GridData>();
+        this.PlayerBattleArray = new Dictionary<ActorBevBase, GridData>();
         foreach (KeyValuePair<byte, long> kv in LogicController.Instance.Actor.GetBattleArray())
         {
             byte index = kv.Key;
@@ -52,7 +56,7 @@ public class FightMgr : MonoBehaviour
             playerBev.transform.localRotation = Quaternion.identity;
             playerBev.transform.localScale = Vector3.one;
             playerBev.InitPlayer(uid);
-            this.m_PlayerBattleArray.Add(playerBev, gridData);
+            this.PlayerBattleArray.Add(playerBev, gridData);
         }
     }
 
@@ -61,7 +65,7 @@ public class FightMgr : MonoBehaviour
     /// </summary>
     private void InitEnemy()
     {
-        this.m_EnemyBattleArray = new Dictionary<ActorBevBase, GridData>();
+        this.EnemyBattleArray = new Dictionary<ActorBevBase, GridData>();
         LevelLogicData levelLogicData = LogicController.Instance.Level.GetLevelLogicDataByID(1000);
         foreach (KeyValuePair<byte, int> kv in levelLogicData.BattleArray)
         {
@@ -74,7 +78,7 @@ public class FightMgr : MonoBehaviour
             enemyBev.transform.localRotation = Quaternion.identity;
             enemyBev.transform.localScale = Vector3.one;
             enemyBev.InitEnemy(id);
-            this.m_EnemyBattleArray.Add(enemyBev, gridData);
+            this.EnemyBattleArray.Add(enemyBev, gridData);
         }
     }
 
@@ -113,8 +117,8 @@ public class FightMgr : MonoBehaviour
     /// <returns></returns>
     private ActorBevBase GetNextMovesActor()
     {
-        ActorBevBase player = this.GetNextMovesActor(this.m_PlayerBattleArray.Keys.ToList());
-        ActorBevBase enemy = this.GetNextMovesActor(this.m_EnemyBattleArray.Keys.ToList());
+        ActorBevBase player = this.GetNextMovesActor(this.PlayerBattleArray.Keys.ToList());
+        ActorBevBase enemy = this.GetNextMovesActor(this.EnemyBattleArray.Keys.ToList());
         return this.GetNextMovesActor(player, enemy);
     }
 
@@ -174,8 +178,8 @@ public class FightMgr : MonoBehaviour
     /// </summary>
     private void ResetActor()
     {
-        this.ResetActor(this.m_EnemyBattleArray.Keys.ToList());
-        this.ResetActor(this.m_PlayerBattleArray.Keys.ToList());
+        this.ResetActor(this.EnemyBattleArray.Keys.ToList());
+        this.ResetActor(this.PlayerBattleArray.Keys.ToList());
         this.m_CurMovesActor = null;
     }
 
@@ -228,9 +232,9 @@ public class FightMgr : MonoBehaviour
         switch (actorBev.Type)
         {
             case ActorType.Enemy:
-                return this.GetTarget(this.m_EnemyBattleArray[ actorBev], this.m_PlayerBattleArray);
+                return this.GetTarget(this.EnemyBattleArray[ actorBev], this.PlayerBattleArray);
             case ActorType.Player:
-                return this.GetTarget(this.m_PlayerBattleArray[ actorBev], this.m_EnemyBattleArray);
+                return this.GetTarget(this.PlayerBattleArray[ actorBev], this.EnemyBattleArray);
         }
         return null;
     }

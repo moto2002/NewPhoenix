@@ -12,6 +12,7 @@ UI资源池
 public sealed class PoolMgr : MonoBehaviour
 {
     public static PoolMgr Instance { get; private set; }
+
     private struct ModelInfo
     {
         public string Path;
@@ -40,6 +41,7 @@ public sealed class PoolMgr : MonoBehaviour
         //Login
         //Main
         //Fight
+        this.RegisterPanelForFight(UIPanelType.FightPanel);
         //Common
     }
 
@@ -138,6 +140,16 @@ public sealed class PoolMgr : MonoBehaviour
     public Texture2D GetTexture2D(string path)
     {
         return this.Get(path) as Texture2D;
+    }
+
+    /// <summary>
+    /// 获取UGUI Sprite
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public Sprite GetSprite(string name)
+    {
+        return (Sprite)this.Get(AssetPathConst.Sprite + name);
     }
 
     /// <summary>

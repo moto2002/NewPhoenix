@@ -8,8 +8,8 @@ public class FightGridComponent : ComponentBase
     public byte EnemyZGridCount;
     public byte PlayerZGridCount;
     public float BorderZLength;
-    public GridData[,] EnemyGirds { get; private set; }
-    public GridData[,] PlayerGirds { get; private set; }
+    public GridData[,] EnemyGrids { get; private set; }
+    public GridData[,] PlayerGrids { get; private set; }
     public bool DrawGrid;
 
     [SerializeField]
@@ -47,24 +47,24 @@ public class FightGridComponent : ComponentBase
 
     private void InitEnemyGrid()
     {
-        this.EnemyGirds = new GridData[this.EnemyZGridCount, this.XGridCount];
+        this.EnemyGrids = new GridData[this.EnemyZGridCount, this.XGridCount];
         for (byte z = 0; z < this.EnemyZGridCount; z++)
         {
             for (byte x = 0; x < this.XGridCount; x++)
             {
-                this.EnemyGirds[z, x] = new GridData() { ZGrid = z, XGrid = x };
+                this.EnemyGrids[z, x] = new GridData() { ZGrid = z, XGrid = x };
             }
         }
     }
 
     private void InitPlayerGrid()
     {
-        this.PlayerGirds = new GridData[this.PlayerZGridCount, this.XGridCount];
+        this.PlayerGrids = new GridData[this.PlayerZGridCount, this.XGridCount];
         for (byte z = 0; z < this.PlayerZGridCount; z++)
         {
             for (byte x = 0; x < this.XGridCount; x++)
             {
-                this.PlayerGirds[z, x] = new GridData() { ZGrid = z, XGrid = x };
+                this.PlayerGrids[z, x] = new GridData() { ZGrid = z, XGrid = x };
             }
         }
     }

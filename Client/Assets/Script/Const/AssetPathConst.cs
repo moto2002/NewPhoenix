@@ -8,4 +8,5 @@
     public const string Effect_UI = "Effect/UI/";
     public const string Effect_Fight = "Effect/Fight/";
     public const string Actor = "Actor/";
+    public const string Sprite = "Texture/Sprite/";
 }

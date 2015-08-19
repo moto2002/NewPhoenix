@@ -14,12 +14,14 @@ public class UIController : MonoBehaviour
     private Dictionary<UIPanelType,PanelBase> m_OpenedPanelDic = new Dictionary<UIPanelType, PanelBase>();
     private bool m_BackupUICameraStatus;
     private LoadingComponent m_LoadingComp;
+    private Transform m_MyTransform;
 
     #region MonoBehaviour methods
 
     void Awake()
     {
         Instance = this;
+        this.m_MyTransform = this.transform;
     }
 
     void Update()
@@ -77,21 +79,7 @@ public class UIController : MonoBehaviour
         this.OpenPanel(UIPanelType.AlertPopupPanel, new PanelParam() { Alert = alertParam });
     }
 
-    public void ShowIngotInsufficientAlert(UIPanelType backPanel)
-    {
-        this.RemoveAllTip();
-        this.HideLoading();
-        AlertParam alertParam = new AlertParam() { Alert = LocalizationUtils.GetText("Alert.Label.IngotInsufficient"), Option = AlertOptionType.Sure_Cancel };
-        alertParam.ResultEvent += (result)=>
-        {
-            if (result)
-            {
-                this.TryClosePanel(backPanel);
-                this.OpenPanel(UIPanelType.MallPanel);
-            }
-        };
-        this.OpenPanel(UIPanelType.AlertPopupPanel, new PanelParam() { Alert = alertParam });
-    }
+  
 
     private void ShowTip(string tip)
     {
@@ -154,6 +142,8 @@ public class UIController : MonoBehaviour
                 return;
             }
             this.m_OpenedPanelDic.Add(type, panel);
+            panel.MyTransform.SetParent(this.m_MyTransform,false);
+
             newDepth = this.GetTopDepth() + 2;//加2的原因是为了保险起见，因为有的时候只加1可能会出现面板重叠
         }
         panel.Open(newDepth, panelParam, backPanel);
