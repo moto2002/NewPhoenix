@@ -15,4 +15,16 @@
         this.AssetName = assetName;
         this.BaseAttackSpeed = baseAttackSpeed;
     }
+
+    #region Test
+
+    public int ID_;//ID
+    public int Name_;//名称
+    public int Feature;//特征
+    public ProfessionType Profession;//职业
+    public byte Quality;//品质
+    public NationalityType Nationality;//国籍
+
+
+    #endregion
 }
