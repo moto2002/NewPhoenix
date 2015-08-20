@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using System;
 
 public sealed class LoadLevelController : MonoBehaviour
 {
@@ -23,8 +21,7 @@ public sealed class LoadLevelController : MonoBehaviour
 
     public void LoadLevel(GameSceneType level)
     {
-        UIController.Instance.RemoveAllTip();
-        UIController.Instance.CloseAllOpendPanel();
+        this.ClearUI();
         StopAllCoroutines();
         StartCoroutine(this.LoadLevelInspector(level));
     }
@@ -39,27 +36,16 @@ public sealed class LoadLevelController : MonoBehaviour
         {
             GameSceneType lastLevel = this.CurrentScene;
             this.CurrentScene = level;
-            this.LoadLevelComplete(lastLevel);
         }
     }
 
-    private void LoadLevelComplete(GameSceneType lastLevel)
-    {
-        //Debug.Log("LoadLevelComplete : ");
-        StopAllCoroutines();
-        StartCoroutine(this.DelayOpenPanel(lastLevel));
-    }
+    #endregion
 
-    private IEnumerator DelayOpenPanel(GameSceneType lastLevel)
+    #region private methods
+
+    private void ClearUI()
     {
-        yield return new WaitForSeconds(0.2f);
-        switch (this.CurrentScene)
-        {
-            case GameSceneType.LoginScene:
-                break;
-            default:
-                break;
-        }
+        UIController.Instance.CloseAllOpendPanel();
     }
 
     #endregion

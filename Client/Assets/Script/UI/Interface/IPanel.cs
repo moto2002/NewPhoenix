@@ -1,5 +1,7 @@
-﻿public interface IPanel
+﻿using System;
+
+public interface IPanel
 {
-    void Open(int depth, PanelParam panelParam, UIPanelType backPanel);
-    void Close();
+    void Open(UIPanelType type, PanelParamBase panelParam, PanelEffectType effectType, int depth);
+    void Close(PanelEffectType type);
 }

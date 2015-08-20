@@ -22,6 +22,8 @@ public abstract class ComponentBase : UIBase,IComponent
 
     public virtual void Show()
     {
+        if (!this.IsInit)
+            this.Init();
         this.MyGameObject.SetActive(true);
     }
 

@@ -3,40 +3,37 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 using System.Linq;
-using System.IO;
 
 public class UIController : MonoBehaviour
 {
     public static UIController Instance { get; private set; }
-    public Camera MainCamera { get { return null; } }
+    public Camera UICam;
+    public Camera MainCamera { get { return this.UICam; } }
     public Transform TopPanel;
 
     private Dictionary<UIPanelType,PanelBase> m_OpenedPanelDic = new Dictionary<UIPanelType, PanelBase>();
     private bool m_BackupUICameraStatus;
-    private LoadingComponent m_LoadingComp;
-    private Transform m_MyTransform;
+    private bool m_Dispose;
+    private Stack<HistoryPanelLogicData> m_HistoryPanelStack = new Stack<HistoryPanelLogicData>();
+    private bool m_HasPanelClosing;
 
     #region MonoBehaviour methods
 
     void Awake()
     {
         Instance = this;
-        this.m_MyTransform = this.transform;
     }
 
-    void Update()
+    void OnDestroy()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            this.ShowAlert(LocalizationUtils.GetText("Alert.Label.ExitGame"), AlertOptionType.Sure_Cancel, (result) => { if (result) Application.Quit(); });
-        }
+        this.m_Dispose = true;
     }
 
     #endregion
 
     #region private methods
+ 
 
-  
     private int GetTopDepth()
     {
         int topDepth = int.MinValue;
@@ -58,73 +55,9 @@ public class UIController : MonoBehaviour
         return (this.m_OpenedPanelDic.ContainsKey(type))? this.m_OpenedPanelDic[type] : null;
     }
 
-    #region Alert
-
-    public void ShowCoding()
-    {
-        this.ShowTip(LocalizationUtils.GetText("Alert.Label.Coding"));
-    }
-
-    public void ShowDebug(string debug)
-    {
-        this.ShowTip(debug);
-    }
-
-    public void ShowAlert(string alert, AlertOptionType options, Action<bool> resultEvent)
-    {
-        this.RemoveAllTip();
-        this.HideLoading();
-        AlertParam alertParam = new AlertParam() { Alert = alert,Option = options };
-        alertParam.ResultEvent += resultEvent;
-        this.OpenPanel(UIPanelType.AlertPopupPanel, new PanelParam() { Alert = alertParam });
-    }
-
-  
-
-    private void ShowTip(string tip)
-    {
-        this.RemoveAllTip();
-        // 获取浮动提示框
-        TipComponent tipComp = PoolMgr.Instance.GetComponent<TipComponent>(AssetPathConst.Component_Common + AssetNameConst.Tip);
-        if (tipComp != null)
-        {
-            tipComp.MyTransform.SetParent(this.TopPanel);
-            tipComp.Show(tip);
-        }
-    }
-
-    public void RemoveAllTip()
-    {
-        TipComponent[] tips = this.GetComponentsInChildren<TipComponent>(true);
-        if (tips != null)
-        {
-            foreach (TipComponent tip in tips)
-            {
-                tip.Hide();
-            }
-        }
-    }
-
-    #endregion
-
     #region OpenPanel
 
-    public void OpenPanel(UIPanelType type)
-    {
-        this.OpenPanel(type, null, UIPanelType.None);
-    }
-
-    public void OpenPanel(UIPanelType type, PanelParam panelParam)
-    {
-        this.OpenPanel(type, panelParam, UIPanelType.None);
-    }
-
-    public void OpenPanel(UIPanelType type, UIPanelType backPanel)
-    {
-        this.OpenPanel(type, null, backPanel);
-    }
-
-    public void OpenPanel(UIPanelType type, PanelParam panelParam, UIPanelType backPanel)
+    public void OpenPanel(UIPanelType type, PanelParamBase panelParam = null,PanelEffectType openEffectType = PanelEffectType.Open)
     {
         PanelBase panel = null;
         int newDepth = 0;
@@ -135,29 +68,45 @@ public class UIController : MonoBehaviour
         }
         else
         {
-            panel= PoolMgr.Instance.GetPanel(type);
+            panel = PoolMgr.Instance.GetPanel(type);
             if (panel == null)
             {
                 Debug.Log("Panel is null " + type);
                 return;
             }
+            panel.MyTransform.localPosition = Vector3.zero;
             this.m_OpenedPanelDic.Add(type, panel);
-            panel.MyTransform.SetParent(this.m_MyTransform,false);
-
             newDepth = this.GetTopDepth() + 2;//加2的原因是为了保险起见，因为有的时候只加1可能会出现面板重叠
         }
-        panel.Open(newDepth, panelParam, backPanel);
+        panel.Open(type,panelParam, openEffectType, newDepth);
     }
 
     #endregion
 
     #region ClosePanel
 
-    public void ClosePanel(UIPanelType type)
+    public void ClosePanel(UIPanelType type,PanelEffectType closeEffectType = PanelEffectType.Close)
     {
-        this.m_OpenedPanelDic[type].Close();
-        this.m_OpenedPanelDic.Remove(type);
+        if (this.m_OpenedPanelDic.ContainsKey(type))
+        {
+            this.m_OpenedPanelDic[type].Close(closeEffectType);
+            this.m_OpenedPanelDic.Remove(type);
+        }
+        else
+        {
+            Debug.LogError(type + " is null");
+        }
     }
+
+    public void ClosePanel(HistoryPanelLogicData data)
+    {
+        if (data != null)
+        {
+            this.ClosePanel(data.Panel,PanelEffectType.CloseByOpenOther);
+            this.ClosePanel(data.SecondPanel);
+        }
+    }
+
 
     public void TryClosePanel(UIPanelType type)
     {
@@ -167,7 +116,7 @@ public class UIController : MonoBehaviour
         }
         else
         {
-            Debug.Log("这个提示可以不用管 Close panel failed  " + type + " is not exist");
+            //Debug.Log("这个提示可以不用管 Close panel failed  " + type + " is not exist");
         }
     }
 
@@ -186,63 +135,6 @@ public class UIController : MonoBehaviour
 
     #endregion
 
-    #region Loading 
-
-    public void ShowLoading()
-    {
-        if (this.m_LoadingComp == null)
-        {
-            this.EnableLoading(true);
-        }
-    }
-
-    public void HideLoading()
-    {
-        if (this.m_LoadingComp != null)
-        {
-            this.EnableLoading(false);
-        }
-    }
-
-    private void EnableLoading(bool isEnable)
-    {
-        if (isEnable)
-        {
-            this.m_BackupUICameraStatus = true;
-            this.DisableUICamera();
-            // 获取加载图标
-            this.m_LoadingComp = PoolMgr.Instance.GetComponent<LoadingComponent>(AssetPathConst.Component_Common + AssetNameConst.Loading);
-           this.m_LoadingComp.MyTransform.SetParent(this.TopPanel);
-            this.m_LoadingComp.MyTransform.localPosition = Vector3.zero;
-        }
-        else
-        {
-            this.SetUICamera(this.m_BackupUICameraStatus);
-            this.m_LoadingComp.Dispose();
-            this.m_LoadingComp = null;
-        }
-    }
-
-    #endregion
-
-    #region UICamera
-
-    public void EnableUICamera()
-    {
-        this.SetUICamera(true);
-    }
-
-    public void DisableUICamera()
-    {
-        this.SetUICamera(false);
-    }
-
-    private void SetUICamera(bool isEnable)
-    {
-    }
-
-    #endregion
-
     #region NotifyPanel 
 
     public void NotifyPanel(UIPanelType type, string methodName, object param = null)
@@ -251,6 +143,78 @@ public class UIController : MonoBehaviour
         if (panel != null)
         {
             panel.SendMessage(methodName, param,SendMessageOptions.DontRequireReceiver);
+        }
+    }
+    #endregion
+
+    #region History
+
+    public void RecordHistory(UIPanelType panel)
+    {
+        this.RecordHistory(new HistoryPanelLogicData(panel) );
+    }
+
+    public void RecordHistory(HistoryPanelLogicData history)
+    {
+        this.m_HistoryPanelStack.Push(history);
+    }
+
+    public void BackToHistory()
+    {
+        if (this.m_HistoryPanelStack.Count > 0)
+        {
+            this.OpenHistory(this.m_HistoryPanelStack.Pop());
+        }
+    }
+
+    private void OpenHistory(HistoryPanelLogicData history)
+    {
+        this.OpenPanel(history.Panel,history.PanelParam,PanelEffectType.OpenByCloseOther);
+        if (history.SecondPanel != null)
+        {
+            this.OpenHistory(history.SecondPanel);
+        }
+    }
+
+    public void BackToHistory(PanelParamBase newPanelParam)
+    {
+        if (this.m_HistoryPanelStack.Count > 0)
+        {
+            this.OpenHistory(this.m_HistoryPanelStack.Pop(), newPanelParam);
+        }
+    }
+
+    private void OpenHistory(HistoryPanelLogicData history, PanelParamBase newPanelParam)
+    {
+        this.OpenPanel(history.Panel, newPanelParam);
+        if (history.SecondPanel != null)
+        {
+            this.OpenHistory(history.SecondPanel);
+        }
+    }
+
+    public void ClearHistory()
+    {
+        this.m_HistoryPanelStack.Clear();
+    }
+
+    public void ChangeHistoryPanelParam(PanelParamBase param)
+    {
+        if (this.m_HistoryPanelStack.Count > 0)
+        {
+            HistoryPanelLogicData data = this.m_HistoryPanelStack.Pop();
+            data.SetPanelParam(param);
+            this.m_HistoryPanelStack.Push(data);
+        }
+    }
+
+    public void ChangeHistoryPanelParam(HistoryPanelLogicData secondPanel)
+    {
+        if (this.m_HistoryPanelStack.Count > 0)
+        {
+            HistoryPanelLogicData data = this.m_HistoryPanelStack.Pop();
+            data.SetSecondPanel(secondPanel);
+            this.m_HistoryPanelStack.Push(data);
         }
     }
 

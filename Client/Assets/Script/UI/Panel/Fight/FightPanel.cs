@@ -5,7 +5,8 @@ public class FightPanel : PanelBase
     public FightUIGridComponent PlayerGrid;
     public FightUIGridComponent EnemyGrid;
 
-    protected override void Open(PanelParam panelParam)
+
+    protected override void Open(PanelParamBase panelParam)
     {
         this.PlayerGrid.InitGrid(FightMgr.Instance.PlayerGrids);
         this.EnemyGrid.InitGrid(FightMgr.Instance.EnemyGrids);

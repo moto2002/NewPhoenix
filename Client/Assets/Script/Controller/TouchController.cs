@@ -46,11 +46,6 @@ public sealed class TouchController/*考虑要不要删*//* 考虑好了，不�
 
     #endregion
 
-    /// <summary>
-    /// 是否开启
-    /// </summary>
-    private bool m_IsTurnOn = true;
-
     public TouchController()
     {
         this.m_SwipeStartList = new List<EasyTouch.SwipeStartHandler>();
@@ -134,116 +129,97 @@ public sealed class TouchController/*考虑要不要删*//* 考虑好了，不�
 
     private void On_SwipeStart(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_SwipeStartList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_SwipeStartList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_Swipe(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_SwipeList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_SwipeList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_SwipeEnd(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_SwipeEndList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_SwipeEndList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_SimpleTap(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_SimpleTapList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_SimpleTapList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_LongTapStart(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_LongTapStartList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_LongTapStartList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_LongTap(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_LongTapList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_LongTapList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_LongTapEnd(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_LongTapEndList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_LongTapEndList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_TouchDown(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_TouchDownList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_TouchDownList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_TouchUp(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_TouchUpList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_TouchUpList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_Twist(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_TwistList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_TwistList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_PinchIn(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_PinchInList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_PinchInList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_PinchOut(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_PinchOutList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_PinchOutList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_PinchEnd(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_PinchEndList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_PinchEndList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_DragStart(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_DragStartList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_DragStartList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_Drag(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_DragList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_DragList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_DragEnd(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_DragEndList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_DragEndList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_TouchStart2Fingers(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_TouchStart2FingersList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_TouchStart2FingersList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_TouchStart(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_TouchStartList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_TouchStartList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     private void On_TouchUp2Fingers(Gesture gesture)
     {
-        if (this.m_IsTurnOn)
-            this.m_TouchUp2FingersList.ForEach(a => { if (a != null) a(gesture); });
+        this.m_TouchUp2FingersList.ForEach(a => { if (a != null) a(gesture); });
     }
 
     #endregion
@@ -561,17 +537,17 @@ public sealed class TouchController/*考虑要不要删*//* 考虑好了，不�
 
     public void TurnOn()
     {
-        this.m_IsTurnOn = true;
+        EasyTouch.instance.enable = true;
     }
 
     public void TurnOff()
     {
-        this.m_IsTurnOn = false;
+        EasyTouch.instance.enable = false;
     }
 
     public bool IsTurnOn()
     {
-        return this.m_IsTurnOn;
+        return EasyTouch.instance.enable;
     }
 
     public void Dispose()
