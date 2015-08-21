@@ -6,20 +6,20 @@ public enum NationalityType : byte
     /// <summary>
     /// 魏
     /// </summary>
-    Wei,
+    Wei = 0,
 
     /// <summary>
     /// 蜀
     /// </summary>
-    Shu,
+    Shu = 1,
 
     /// <summary>
     /// 吴
     /// </summary>
-    Wu,
+    Wu = 2,
 
     /// <summary>
     /// 群
     /// </summary>
-    Other,
+    Other = 3,
 }

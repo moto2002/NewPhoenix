@@ -1,43 +1,38 @@
 ﻿public enum WeaponType : byte
 {
     /// <summary>
-    /// 通用型
-    /// </summary>
-    Common,
-
-    /// <summary>
     /// 穿刺
     /// </summary>
-    Puncture,
+    Puncture = 0,
 
     /// <summary>
     /// 法术
     /// </summary>
-    Magic,
+    Magic = 1,
 
     /// <summary>
     /// 粉碎
     /// </summary>
-    Crush,
+    Crush = 2,
 
     /// <summary>
     /// 横扫
     /// </summary>
-    Sweep,
+    Sweep = 3,
 
     /// <summary>
     /// 短兵
     /// </summary>
-    Short,
+    Short = 4,
 
     /// <summary>
     /// 远射
     /// </summary>
-    Long,
+    Long = 5,
 
     /// <summary>
     /// 治疗
     /// </summary>
-    Heal,
+    Heal = 6,
 
 }

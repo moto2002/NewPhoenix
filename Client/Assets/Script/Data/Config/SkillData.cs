@@ -1,3 +1,5 @@
-﻿public class SkillData
+﻿
+public class SkillData
 {
+
 }
