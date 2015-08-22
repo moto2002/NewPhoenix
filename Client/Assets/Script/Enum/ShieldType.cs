@@ -6,15 +6,15 @@ public enum ShieldType : byte
     /// <summary>
     /// 没有护盾属性
     /// </summary>
-    None = 0,
+    None,
 
     /// <summary>
     /// 先使用护盾再使用生命
     /// </summary>
-    BeforeHP = 1,
+    BeforeHP,
 
     /// <summary>
     /// 先使用生命再使用护盾
     /// </summary>
-    AfterHP = 2,
+    AfterHP,
 }

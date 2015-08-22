@@ -6,20 +6,20 @@ public enum L1AttributeType : byte
     /// <summary>
     /// 力量
     /// </summary>
-    Power = 0,
+    Power,
 
     /// <summary>
     /// 智力
     /// </summary>
-    IQ = 1,
+    IQ,
 
     /// <summary>
     /// 敏捷
     /// </summary>
-    Agile = 2,
+    Agile,
 
     /// <summary>
     /// 体质
     /// </summary>
-    Physique = 3,
+    Physique,
 }
