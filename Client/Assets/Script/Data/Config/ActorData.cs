@@ -1,12 +1,27 @@
 ﻿public class ActorData
 {
-    public int ID;//ID
-    public string Name;//名称
+    public int ID { get; private set; }
+    public string Name { get; private set; }
+    public string Description { get; private set; }
+    public string Icon { get; private set; }
+    public string AssetName { get; private set; }
+    public float BaseAttackSpeed { get; private set; }
+    public ActorData(int id, string name, string description, string icon, string assetName,float baseAttackSpeed)
+    {
+        this.ID = id;
+        this.Name = name;
+        this.Description = description;
+        this.Icon = icon;
+        this.AssetName = assetName;
+        this.BaseAttackSpeed = baseAttackSpeed;
+    }
+
+    #region 建表字段
+
+    public int ID_;//ID
+    public string Name_;//名称
     public string Feature;//特征
-    public string Description;//描述
-    public string Icon;//图标
-    public string Texture;//原画
-    public string Model;//模型
+    public string Description_;//描述
     public ProfessionType Profession;//职业
     public byte Quality;//品质
     public NationalityType Nationality;//国籍
@@ -48,5 +63,7 @@
     /// </summary>
     public int SpecialAttribute;
     public ShieldType ShieldType;
+    #endregion
+
     #endregion
 }

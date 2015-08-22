@@ -6,25 +6,25 @@ public enum EquipmentType : byte
     /// <summary>
     /// 武器
     /// </summary>
-    Weapon = 0,
+    Weapon,
 
     /// <summary>
     /// 头盔
     /// </summary>
-    Helmet = 1,
+    Helmet,
 
     /// <summary>
     /// 铠甲
     /// </summary>
-    Armor = 2,
+    Armor,
 
     /// <summary>
     /// 鞋子
     /// </summary>
-    Shoe = 3,
+    Shoe,
 
     /// <summary>
     /// 配饰
     /// </summary>
-    Accessories = 4,
+    Accessories,
 }
