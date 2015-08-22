@@ -3,18 +3,19 @@
 /// </summary>
 public enum ProfessionType : byte
 {
+    None = 0,
     /// <summary>
     /// 破军
     /// </summary>
-    PoJun,
+    PoJun = 1,
 
     /// <summary>
     /// 贪狼
     /// </summary>
-    TanLang,
+    TanLang = 2,
 
     /// <summary>
     /// 七杀
     /// </summary>
-    QiSha,
+    QiSha = 3,
 }
