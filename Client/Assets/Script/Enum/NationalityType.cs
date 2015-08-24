@@ -4,22 +4,28 @@
 public enum NationalityType : byte
 {
     /// <summary>
+    /// 无国籍
+    /// </summary>
+    None = 0,
+
+    /// <summary>
     /// 魏
     /// </summary>
-    Wei = 0,
+    Wei = 1,
 
     /// <summary>
     /// 蜀
     /// </summary>
-    Shu = 1,
+    Shu = 2,
 
     /// <summary>
     /// 吴
     /// </summary>
-    Wu = 2,
+    Wu = 3,
 
     /// <summary>
     /// 群
     /// </summary>
-    Other = 3,
+    Other = 4,
+
 }

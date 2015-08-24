@@ -25,15 +25,17 @@
     public long UID { get; private set; }
     public int ID { get { return this.m_ActorData.ID; } }
     public string Name { get { return this.m_ActorData.Name; } }//名称
-    public string Feature { get { return this.m_ActorData.Feature; } }//特征
     public string Description{ get { return this.m_ActorData.Description; } }//描述
     public string Icon { get { return this.m_ActorData.Icon; } }//图标
     public string Texture { get { return this.m_ActorData.Texture; } }//原画
     public string Model { get { return this.m_ActorData.Model; } }//模型
     public ProfessionType Profession { get { return this.m_ActorData.Profession; } }//职业
-    public byte Quality{ get { return this.m_ActorData.Quality; } }//品质
     public NationalityType Nationality { get { return this.m_ActorData.Nationality; } }//国籍
     public ColorType Color { get { return this.m_ActorData.Color; } }//颜色
+    public SexType Sex { get { return this.m_ActorData.Sex; } }//性别
+    public byte Quality { get { return this.m_ActorData.Quality; } }//品质
+    public byte LV { get { return this.m_ActorData.LV; } }//等级
+
     #region 1级属性
     public L1AttributeType L1MainAttribute { get { return this.m_ActorData.L1MainAttribute; } }//1级主属性
     public int Power { get { return this.m_ActorData.Power; } }//力量
@@ -70,6 +72,6 @@
     /// 破军 护盾值
     /// </summary>
     public int SpecialAttribute { get { return this.m_ActorData.SpecialAttribute; } }
-    public ShieldType ShieldType { get { return this.m_ActorData.ShieldType; } }
+    public ShieldType ShieldType { get { return this.m_ActorData.ShieldType; } }//护盾类型
     #endregion
 }

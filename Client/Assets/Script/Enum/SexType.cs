@@ -1,4 +1,7 @@
-﻿public enum SexType : byte
+﻿/// <summary>
+/// 性别
+/// </summary>
+public enum SexType : byte
 {
     /// <summary>
     /// 未知

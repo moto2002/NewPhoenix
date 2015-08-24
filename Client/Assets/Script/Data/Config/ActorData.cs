@@ -2,15 +2,16 @@
 {
     public int ID;//ID
     public string Name;//名称
-    public string Feature;//特征
     public string Description;//描述
     public string Icon;//图标
     public string Texture;//原画
     public string Model;//模型
     public ProfessionType Profession;//职业
-    public byte Quality;//品质
     public NationalityType Nationality;//国籍
     public ColorType Color;//颜色
+    public SexType Sex;//性别
+    public byte Quality;//品质
+    public byte LV;//品质
     #region 1级属性
     public L1AttributeType L1MainAttribute;//1级主属性
     public int Power;//力量
@@ -47,6 +48,6 @@
     /// 破军 护盾值
     /// </summary>
     public int SpecialAttribute;
-    public ShieldType ShieldType;
+    public ShieldType ShieldType;//护盾类型
     #endregion
 }
