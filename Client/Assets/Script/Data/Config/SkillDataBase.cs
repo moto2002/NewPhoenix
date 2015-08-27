@@ -1,5 +1,5 @@
 ﻿
-public class SkillData
+public abstract class SkillDataBase
 {
     public int ID;//ID
     public string Name;//名称

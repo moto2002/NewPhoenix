@@ -45,8 +45,8 @@
     #endregion
 
     public WeaponType[] EnableWeaponTypes { get { return this.m_ActorData.EnableWeaponTypes; } }//能够装的武器类型
-    public SkillData UniqueSkill { get { return this.m_ActorData.UniqueSkill; } }//绝技
-    public SkillData[] Skills { get { return this.m_ActorData.Skills; } }//技能
+    public SkillDataBase UniqueSkill { get { return this.m_ActorData.UniqueSkill; } }//绝技
+    public SkillDataBase[] Skills { get { return this.m_ActorData.Skills; } }//技能
 
     #region 2级属性
     public int HP { get { return this.m_ActorData.HP; } }//生命值
