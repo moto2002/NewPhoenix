@@ -1,7 +1,7 @@
 ﻿/// <summary>
 /// 属性
 /// </summary>
-public enum L1AttributeType : byte
+public enum AttributeType : byte
 {
     #region 1级属性
     /// <summary>

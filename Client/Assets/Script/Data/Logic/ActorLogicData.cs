@@ -37,7 +37,7 @@
     public byte LV { get { return this.m_ActorData.LV; } }//等级
 
     #region 1级属性
-    public L1AttributeType L1MainAttribute { get { return this.m_ActorData.L1MainAttribute; } }//1级主属性
+    public AttributeType L1MainAttribute { get { return this.m_ActorData.L1MainAttribute; } }//1级主属性
     public int Power { get { return this.m_ActorData.Power; } }//力量
     public int IQ { get { return this.m_ActorData.IQ; } }//智力
     public int Agile { get { return this.m_ActorData.Agile; } }//敏捷

@@ -15,9 +15,8 @@
     Rect = 1,
 
     /// <summary>
-    /// 随机
+    /// 离散的点
     /// </summary>
-    Range = 2,
-
+    Point = 2,
   
 }

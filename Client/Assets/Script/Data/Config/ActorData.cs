@@ -13,7 +13,7 @@
     public byte Quality;//品质
     public byte LV;//品质
     #region 1级属性
-    public L1AttributeType L1MainAttribute;//1级主属性
+    public AttributeType L1MainAttribute;//1级主属性
     public int Power;//力量
     public int IQ;//智力
     public int Agile;//敏捷
