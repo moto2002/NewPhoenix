@@ -4,7 +4,7 @@ public abstract class SkillDataBase
     public  int ID;//ID
     public string Name;//名称
     public string Description;//描述
-    public ActorType UseTarget;//作用于哪方
+    public ActorType EffectTarget;//作用于哪方
     public SelectionTargetType SelectionTarget;//选择目标的方式
     public SkillRangeType SkillRange;//技能范围
 
@@ -22,21 +22,21 @@ public abstract class SkillDataBase
 
     //当 SkillRange 为 Point 时
     public byte TargetCount;//目标数量
-    public AttributeType AttributeType;//属性类型
 
     //作用值
-    public float DamageRate;//造成的伤害率
-    public int DamageValue;//伤害值
-
-    //触发
-    public float TriggerRate;//触发率
-    public int TriggerSkillID;//触发的技能
-    public byte TriggerRoundCount;//触发作用的回合数
+    public AttributeType AttributeType;//属性类型
+    //可能是 造成的伤害率 或者 回复率
+    //可能是 伤害值 或者 回复值
+    // 根据英雄而定
+    public RateOrValueType EffectRateOrValue;
+    public float Effect;//数据
 
     public byte CD;//CD回合数
-    public float CostRate;//消耗率
-    public int CostValue;//消耗值
-    public int BuffID;//准备设计Buff
+    //消耗率 消耗值 消耗的东西根据英雄的职业而定
+    public RateOrValueType CostRateOrValue;
+    public float Cost;//数据
+    public int[] Buffs;//携带的BuffID
+    public DamageType DamageType;//伤害类型
 
 
 }

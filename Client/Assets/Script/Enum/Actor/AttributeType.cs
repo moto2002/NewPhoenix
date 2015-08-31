@@ -38,7 +38,7 @@ public enum AttributeType : byte
     AP = 5,
 
     /// <summary>
-    /// 攻击力
+    /// 物理防御
     /// </summary>
     PhysicsDEF = 6,
 
