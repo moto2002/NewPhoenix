@@ -4,17 +4,12 @@
 public enum SexType : byte
 {
     /// <summary>
-    /// 未知
+    /// 男
     /// </summary>
-    None = 0,
+    Male = 0,
 
     /// <summary>
     /// 女
     /// </summary>
     Female = 1,
-
-    /// <summary>
-    /// 男
-    /// </summary>
-    Male = 2,
 }
