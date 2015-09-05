@@ -1,7 +1,7 @@
 ﻿/// <summary>
 /// 战斗行为
 /// </summary>
-public enum FightBevType : byte
+public enum FightActionType : byte
 {
     /// <summary>
     /// 普通攻击

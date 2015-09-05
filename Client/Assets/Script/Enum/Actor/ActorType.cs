@@ -3,6 +3,6 @@
 /// </summary>
 public enum ActorType : byte
 {
-    Player,
-    Enemy,
+    Player = 0,
+    Enemy = 1,
 }
