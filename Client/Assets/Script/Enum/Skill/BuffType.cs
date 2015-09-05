@@ -11,131 +11,131 @@ public enum BuffType : byte
     /// <summary>
     ///  中毒
     /// </summary>
-    ZhongDu,
+    ZhongDu = 1,
 
     /// <summary>
     ///  流血
     /// </summary>
-    LiuXue,
+    LiuXue = 2,
 
     /// <summary>
     ///  撕裂
     /// </summary>
-    SiLie,
+    SiLie = 3,
 
     /// <summary>
     ///  眩晕
     /// </summary>
-    XuanYun,
+    XuanYun = 4,
 
     /// <summary>
     ///  缴械
     /// </summary>
-    JiaoXie,
+    JiaoXie = 5,
 
     /// <summary>
     ///  封技
     /// </summary>
-    FengJi,
+    FengJi = 6,
 
     /// <summary>
     ///  混乱
     /// </summary>
-    HunLuan,
+    HunLuan = 7,
 
     /// <summary>
     ///  易损
     /// </summary>
-    YiSun,
+    YiSun = 8,
 
     /// <summary>
     ///  连环
     /// </summary>
-    LianHuan,
+    LianHuan = 9,
 
     /// <summary>
     ///  麻痹
     /// </summary>
-    MaBi,
+    MaBi = 10,
 
     /// <summary>
     ///  致盲
     /// </summary>
-    ZhiMang,
+    ZhiMang = 11,
 
     /// <summary>
     ///  虚弱
     /// </summary>
-    XuRuo,
+    XuRuo = 12,
 
     /// <summary>
     ///  破甲
     /// </summary>
-    PoJia,
+    PoJia = 13,
 
     /// <summary>
     ///  感电
     /// </summary>
-    GanDian,
+    GanDian = 14,
 
     /// <summary>
     ///  迟缓
     /// </summary>
-    ChiHuan,
+    ChiHuan = 15,
 
     /// <summary>
     ///  封疗
     /// </summary>
-    FengLiao,
+    FengLiao = 16,
 
     /// <summary>
     ///  断筋
     /// </summary>
-    DuanJin,
+    DuanJin = 17,
 
     /// <summary>
     ///  弱点
     /// </summary>
-    RuoDian,
+    RuoDian = 18,
 
     /// <summary>
     ///  破绽
     /// </summary>
-    PoZhan,
+    PoZhan = 19,
 
     /// <summary>
     ///  封怒
     /// </summary>
-    FengNu,
+    FengNu = 20,
 
     /// <summary>
     ///  绝气
     /// </summary>
-    JueQi,
+    JueQi = 21,
 
     /// <summary>
     ///  藏兵
     /// </summary>
-    CangBing,
+    CangBing = 22,
 
     /// <summary>
     ///  恫吓
     /// </summary>
-    DongHe,
+    DongHe = 23,
 
     /// <summary>
     ///  缠怨
     /// </summary>
-    ChanYuan,
+    ChanYuan = 24,
 
     /// <summary>
     ///  离间
     /// </summary>
-    LiJian,
+    LiJian = 25,
 
     /// <summary>
     ///  激昂
     /// </summary>
-    JiAng,
+    JiAng = 26,
 
 }

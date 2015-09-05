@@ -21,20 +21,10 @@
     //消耗率 消耗值 消耗的东西根据英雄的职业而定
     public RateOrValueType CostRateOrValue;
     public float CostValue;//数据
-
-    #region 触发的Buff
-    public float? TriggerBuffProbability0;//触发Buff的概率
-    public int? TriggerBuffID0;//触发的Buff
-    public int? TriggerBuffContinueRoundCount0;//触发Buff的持续回合数
-
-    public float? TriggerBuffProbability1;//触发Buff的概率
-    public int? TriggerBuffID1;//触发的Buff
-    public int? TriggerBuffContinueRoundCount1;//触发Buff的持续回合数
-    #endregion
+    public SkillTriggerBuffData[] TriggerBuffs;//触发的Buff
     public DamageType DamageType;//伤害类型
     public float Fluctuation;//波动
-
-    public float? DamageRate;
+    public float? DamageRate;//造成的伤害率
     /// <summary>
     /// 回复生命 = 源（RestoreHPeSource） X 率（DamageRate）
     /// false(0)：表示施放方的攻击
