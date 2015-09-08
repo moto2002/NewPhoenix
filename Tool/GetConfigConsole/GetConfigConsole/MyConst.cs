@@ -14,5 +14,6 @@ namespace GetConfigConsole
         public const string Password = "jlxmysql";
         public const string MysqlCmd = "select table_name from information_schema.tables where table_type = 'base table'";
         public const string TableNameKeyWord = "config_";
+        public const string TableQuery = "select * from {0}";
     }
 }

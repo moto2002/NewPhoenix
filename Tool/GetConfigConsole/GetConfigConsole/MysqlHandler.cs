@@ -69,7 +69,8 @@ namespace GetConfigConsole
 
         private MySqlDataAdapter GetTableData(string tableName)
         {
-            return null;
+            string query = string.Format(MyConst.TableQuery, tableName);
+            return  new MySqlDataAdapter(query, this.m_Connection);
         }
 
         #endregion
