@@ -8,4 +8,5 @@
     public const string TableNameKeyWord = @"config_";
     public const string TableQuery = @"select * from {0}";
     public const string ConfigName = @"ConfigData.zip";
+    public const string ZipEntryName = @"010101010111000";
 }
