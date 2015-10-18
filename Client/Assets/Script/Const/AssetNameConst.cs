@@ -4,5 +4,4 @@
     public const string PropItem = "PropItemComponent";
     public const string PanelBackground = "PanelBackgroundComponent";
     public const string Loading = "LoadingComponent";
-    public const string ConfigData = "ConfigData.zip";
 }

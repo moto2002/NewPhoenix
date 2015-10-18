@@ -8,6 +8,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO.Compression;
 using ICSharpCode.SharpZipLib.Zip;
+using System.Runtime.Serialization;
 
 public sealed class RefreshConfigEditor : Editor
 {
@@ -18,28 +19,42 @@ public sealed class RefreshConfigEditor : Editor
     {
         CreateConnect();
         DataSet dataSet = GetDataSet();
-        MemoryStream ms = Compression(dataSet);
-        SaveToFile(ms);
+        //MemoryStream ms = Compression(dataSet);
+        //SaveToFile(ms);
+
+        byte[] bytes = Compression(dataSet);
+        SaveToFile(bytes);
     }
 
     [MenuItem("jlx/GetConfigData")]
     private static void GetConfigData()
     {
-        Stream s = GetFromFile();
-        Debug.Log("GetFromFile " + s.Length);
-        MemoryStream ms = new MemoryStream();
-        ZipInputStream zis = new ZipInputStream(s);
-        ZipEntry ze = zis.GetNextEntry();
-        byte[] data = new byte[ze.Size];
-        zis.Read(data, 0, data.Length);
-        ms.Write(data, 0, data.Length);
-        Debug.Log("ms " + ms.Length);
-        DataSet ds = new DataSet();
-
-        ds.WriteXml(ms);
-        Debug.Log(" ds.Tables " + ds.Tables["Config_Actor"].TableName);
-        //2015.10.17.02.26写到这里
+        DataSet dataSet = new DataSet();
+        Stream stream = GetFromFile();
+        Debug.Log("GetFromFile " + stream.Length);
+        MemoryStream memoryStream = new MemoryStream();
+        ZipInputStream zipInputStream = new ZipInputStream(stream);
+        ZipEntry zipEntry;
+        while ((zipEntry = zipInputStream.GetNextEntry()) != null)
+        {
+            byte[] data = new byte[zipEntry.Size];
+            zipInputStream.Read(data, 0, data.Length);
+            memoryStream.Write(data, 0, data.Length);
+        }
        
+        Debug.Log("ms " + memoryStream.Length);
+        memoryStream.Position = 0;
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        IFormatter formatter = new BinaryFormatter();
+        dataSet = (DataSet)formatter.Deserialize(memoryStream);
+        memoryStream.Close();
+        zipInputStream.Close();
+        stream.Close();
+        DataTable config_actor = dataSet.Tables["config_actor"];
+        foreach (DataRow item in config_actor.Rows)
+        {
+            Debug.Log(item["id"] + "" + item["name"]);
+        }
     }
 
     private static void CreateConnect()
@@ -127,12 +142,22 @@ public sealed class RefreshConfigEditor : Editor
         Debug.Log("SaveToFile Complete");
     }
 
+    private static void SaveToFile(byte[] bytes)
+    {
+        using (FileStream fs = new FileStream(Path.Combine(Application.persistentDataPath, ConfigConst.ConfigName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
+        {
+            fs.Seek(0, SeekOrigin.Begin);
+            fs.Write(bytes,0, bytes.Length);
+        }
+        Debug.Log("SaveToFile Complete");
+    }
+
     private static Stream GetFromFile()
     {
         return File.OpenRead(Path.Combine(Application.persistentDataPath, ConfigConst.ConfigName));
     }
 
-    private static MemoryStream Compression(DataSet dataSet)
+    private static byte[]/*MemoryStream*/ Compression(DataSet dataSet)
     {
         MemoryStream ms = new MemoryStream();
         ms.Position = 0;
@@ -144,7 +169,8 @@ public sealed class RefreshConfigEditor : Editor
         //MemoryStream compressedMS = Compression(ms.GetBuffer());
         byte[] compressedBytes = Compression(ms.ToArray());
         Debug.Log("Compression After Length : " + compressedBytes.Length);
-        return new MemoryStream(compressedBytes);
+        //return new MemoryStream(compressedBytes);
+        return compressedBytes;
     }
 
     private static byte[] Compression(byte[] bytes)

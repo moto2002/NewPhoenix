@@ -21,8 +21,7 @@
     #endregion
 
     public WeaponType[] EnableWeaponTypes;//能够装的武器类型
-    public SkillDataBase UniqueSkill;//绝技
-    public SkillDataBase[] Skills;//技能
+    public int[] Skills;//技能
 
     #region 2级属性
     public int HP;//生命值

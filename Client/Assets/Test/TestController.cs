@@ -20,6 +20,11 @@ public class TestController : MonoBehaviour
         Instance = this;
     }
 
+    void Start()
+    {
+        ConfigController.Instance.Test();
+    }
+
     #region public methods
 
     #endregion

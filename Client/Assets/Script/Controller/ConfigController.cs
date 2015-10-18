@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO.Compression;
 using System.Data;
 using MySql.Data.MySqlClient;
+using ICSharpCode.SharpZipLib.Zip;
 
 public sealed class ConfigController
 {
@@ -24,69 +25,66 @@ public sealed class ConfigController
     public SkillConfig Skill { get; private set; }
     //private DataSet m_DataSet;
 
-    private  MySqlConnection m_Connection;
+    private MySqlConnection m_Connection;
 
     public ConfigController()
     {
         DataSet dataSet = this.GetDataSet();
-        if(dataSet!=null)
+        if (dataSet != null)
         {
             Debug.Log("文件解压成功");
+            DataTable config_actor = dataSet.Tables["config_actor"];
+            DataRow row = config_actor.Rows[0];
+            Debug.Log("ID " + row["ID"] + " Name " + row["Name"]);
         }
-        this.Actor = new ActorConfig();
+        this.Actor = new ActorConfig(dataSet.Tables["config_actor"]);
         this.Skill = new SkillConfig();
-       
+
+        ActorData actorData = this.Actor.GetActorDataByID(1);
+        Debug.Log(actorData.Name);
     }
 
-
+    public void Test()
+    { }
 
     private DataSet GetDataSet()
     {
-        string configFilePath = Path.Combine(Application.persistentDataPath, AssetNameConst.Loading);
+        string configFilePath = Path.Combine(Application.persistentDataPath, ConfigConst.ConfigData);
         if (!File.Exists(configFilePath))
         {
             Debug.LogError("配置文件不存在 " + configFilePath);
             return null;
         }
-        DataSet dataSet = null;
         //取文件
-        using (FileStream fs = new FileStream(configFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+        using (Stream stream = new FileStream(configFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
         {
-            if (fs.Length == 0)
+            if (stream.Length == 0)
             {
                 Debug.LogError("配置文件大小为0");
                 //fs.Close();
                 return null;
             }
-            Debug.Log("文件大小 " + fs.Length);
-            fs.Position = 0;
-            //反序列化
-            IFormatter fm = new BinaryFormatter();
-            object o = fm.Deserialize(fs);
-            //可以尝试直接发序列化到 MemoryStream 里
-            using (MemoryStream compressedMS = new MemoryStream())
+            Debug.Log("文件大小 " + stream.Length);
+            stream.Position = 0;
+            stream.Seek(0, SeekOrigin.Begin);
+            using (ZipInputStream zipInputStream = new ZipInputStream(stream))
             {
-                //序列化到内存流
-                fm.Serialize(compressedMS, o);
-                //解压
-                using (MemoryStream decompressedMS = new MemoryStream())
+                using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    using (GZipStream gzip = new GZipStream(compressedMS, CompressionMode.Decompress))
+                    ZipEntry zipEntery;
+                    while ((zipEntery = zipInputStream.GetNextEntry()) != null)
                     {
-                        int bufferLength = 2000;
-                        byte[] tmpBuffer = new byte[bufferLength];
-                        int length = 0;
-                        while((length = gzip.Read(tmpBuffer,0, bufferLength))>0)
-                        {
-                            decompressedMS.Write(tmpBuffer, 0, length);
-                        }
-                        fm.Serialize(decompressedMS, dataSet);
+                        int count = (int)zipEntery.Size;
+                        byte[] data = new byte[count];
+                        zipInputStream.Read(data, 0, count);
+                        memoryStream.Write(data, 0, count);
                     }
+                    memoryStream.Position = 0;
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    IFormatter formatter = new BinaryFormatter();
+                    return (DataSet)formatter.Deserialize(memoryStream);
                 }
             }
         }
-        return dataSet;
-    } 
-
-
+    }
 }
