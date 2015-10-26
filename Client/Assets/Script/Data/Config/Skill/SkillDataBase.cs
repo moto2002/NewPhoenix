@@ -12,4 +12,6 @@ public abstract class SkillDataBase
     public RateOrValueType? ChangeRateOrVale;//百分百，或者值
     public float? ChangeValue;//数据
 
+    public ShieldType? ShieldType;//护盾类型
+
 }

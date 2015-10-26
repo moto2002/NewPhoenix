@@ -72,6 +72,5 @@
     /// 破军 护盾值
     /// </summary>
     public int SpecialAttribute { get { return this.m_ActorData.SpecialAttribute; } }
-    public ShieldType? ShieldType { get { return this.m_ActorData.ShieldType; } }//护盾类型
     #endregion
 }

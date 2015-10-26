@@ -6,69 +6,59 @@ using UnityEngine;
 public sealed class ActorConfig
 {
     private Dictionary<int, ActorData> m_ActorDic;
-    public ActorConfig(DataTable table)
+    public ActorConfig(DataTable actorTable)
+    {
+        this.ParseActorTable(actorTable);
+    }
+
+    private void ParseActorTable(DataTable actorTable)
     {
         this.m_ActorDic = new Dictionary<int, ActorData>();
-        foreach (DataRow row in table.Rows)
+        foreach (DataRow row in actorTable.Rows)
         {
-            ActorData data = new ActorData();
-            data.ID = int.Parse(row["ID"].ToString());
-            data.Name = row["Name"].ToString();
-            /*
-            data.Description = row["Description"].ToString();
-            data.Icon = row["Icon"].ToString();
-            data.Texture = row["Texture"].ToString();
-            data.Model = row["Model"].ToString();
-            if (!row.IsNull("Profession"))
+            ActorData data = new ActorData()
             {
-                data.Profession = (ProfessionType)Enum.Parse(typeof(ProfessionType), row["Profession"].ToString());
-            }
-            if (!row.IsNull("Nationality"))
-            {
-                data.Nationality = (NationalityType)Enum.Parse(typeof(NationalityType), row["Nationality"].ToString());
-            }
-            data.Color = (ColorType)Enum.Parse(typeof(ColorType), row["Color"].ToString());
-            if (!row.IsNull("Sex"))
-            {
-                data.Sex = (SexType)Enum.Parse(typeof(SexType), row["Sex"].ToString());
-            }
-            data.Quality = byte.Parse(row["Quality"].ToString());
-            data.LV = byte.Parse(row["LV"].ToString());
+                ID = int.Parse(row["ID"].ToString()),
 
+                Name = row["Name"].ToString(),
+                Description = row["Description"].ToString(),
+                Icon = row["Icon"].ToString(),
+                Texture = row["Texture"].ToString(),
+                Model = true ? null : row["Model"].ToString(),
+                Profession = row.IsNull("Profession") ? (ProfessionType?)null : (ProfessionType)Enum.Parse(typeof(ProfessionType), row["Profession"].ToString()),
+                Nationality = row.IsNull("Nationality") ? (NationalityType?)null : (NationalityType)Enum.Parse(typeof(NationalityType), row["Nationality"].ToString()),
+                Color = (ColorType)Enum.Parse(typeof(ColorType), row["Color"].ToString()),
+                Sex = row.IsNull("Sex") ? (SexType?)null : (SexType)Enum.Parse(typeof(SexType), row["Sex"].ToString()),
+                Quality = byte.Parse(row["Quality"].ToString()),
+                LV = byte.Parse(row["LV"].ToString()),
 
-            #region 1级属性
-            if (!row.IsNull("L1MainAttribute"))
-            {
-                data.L1MainAttribute = (AttributeType)Enum.Parse(typeof(AttributeType), row["L1MainAttribute"].ToString());
-            }
-            data.Power = int.Parse(row["Power"].ToString());
-            data.IQ = int.Parse(row["IQ"].ToString());
-            data.Agile = int.Parse(row["Agile"].ToString());
-            data.Physique = int.Parse(row["Physique"].ToString());
-            #endregion
+                #region 1级属性
+                L1MainAttribute = row.IsNull("L1MainAttribute") ? (AttributeType?)null : (AttributeType)Enum.Parse(typeof(AttributeType), row["L1MainAttribute"].ToString()),
+                Power = int.Parse(row["Power"].ToString()),
+                IQ = int.Parse(row["IQ"].ToString()),
+                Agile = int.Parse(row["Agile"].ToString()),
+                Physique = int.Parse(row["Physique"].ToString()),
+                #endregion
 
-            #region 2级属性
-            data.HP = int.Parse(row["HP"].ToString());
-            data.AP = int.Parse(row["AP"].ToString());
-            data.PhysicsDEF = int.Parse(row["PhysicsDEF"].ToString());
-            data.MagicDEf = int.Parse(row["MagicDEf"].ToString());
-            data.Speed = int.Parse(row["Speed"].ToString());
-            data.Hit = float.Parse(row["Hit"].ToString());
-            data.Dodge = float.Parse(row["Dodge"].ToString());
-            data.Critical = float.Parse(row["Critical"].ToString());
-            data.OpposeCritical = float.Parse(row["OpposeCritical"].ToString());
-            data.CriticalDamge = float.Parse(row["CriticalDamge"].ToString());
-            data.CriticalDamgeCounteract = float.Parse(row["CriticalDamgeCounteract"].ToString());
-            data.Heal = float.Parse(row["Heal"].ToString());
-            data.BeHealed = float.Parse(row["BeHealed"].ToString());
-            data.Block = float.Parse(row["Block"].ToString());
-            data.Broken = float.Parse(row["Broken"].ToString());
-            data.SpecialAttribute = int.Parse(row["SpecialAttribute"].ToString());
-            if (!row.IsNull("ShieldType"))
-            {
-                data.ShieldType = (ShieldType)Enum.Parse(typeof(ShieldType), row["ShieldType"].ToString());
-            }
-            #endregion
+                #region 2级属性
+                HP = int.Parse(row["HP"].ToString()),
+                AP = int.Parse(row["AP"].ToString()),
+                PhysicsDEF = int.Parse(row["PhysicsDEF"].ToString()),
+                MagicDEf = int.Parse(row["MagicDEf"].ToString()),
+                Speed = int.Parse(row["Speed"].ToString()),
+                Hit = float.Parse(row["Hit"].ToString()),
+                Dodge = float.Parse(row["Dodge"].ToString()),
+                Critical = float.Parse(row["Critical"].ToString()),
+                OpposeCritical = float.Parse(row["OpposeCritical"].ToString()),
+                CriticalDamge = float.Parse(row["CriticalDamge"].ToString()),
+                CriticalDamgeCounteract = float.Parse(row["CriticalDamgeCounteract"].ToString()),
+                Heal = float.Parse(row["Heal"].ToString()),
+                BeHealed = float.Parse(row["BeHealed"].ToString()),
+                Block = float.Parse(row["Block"].ToString()),
+                Broken = float.Parse(row["Broken"].ToString()),
+                SpecialAttribute = int.Parse(row["SpecialAttribute"].ToString()),
+                #endregion
+            };
             string[] weapons = row["EnableWeaponTypes"].ToString().Split(ConfigConst.SplitChar);
             data.EnableWeaponTypes = new WeaponType[weapons.Length];
             for (int i = 0; i < weapons.Length; i++)
@@ -81,10 +71,10 @@ public sealed class ActorConfig
             {
                 data.Skills[i] = int.Parse(skillStrs[i]);
             }
-            */
+
             if (this.m_ActorDic.ContainsKey(data.ID))
             {
-                Debug.LogError(table.TableName + " 重复ID " + data.ID);
+                Debug.LogError(actorTable.TableName + " 重复ID " + data.ID);
             }
             else
             {

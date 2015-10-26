@@ -48,8 +48,6 @@
     /// </summary>
     public int SpecialAttribute;
 
-    //不要
-    public ShieldType? ShieldType;//护盾类型
 
     #endregion
 }

@@ -38,10 +38,12 @@ public sealed class ConfigController
             Debug.Log("ID " + row["ID"] + " Name " + row["Name"]);
         }
         this.Actor = new ActorConfig(dataSet.Tables["config_actor"]);
-        this.Skill = new SkillConfig();
-
-        ActorData actorData = this.Actor.GetActorDataByID(1);
-        Debug.Log(actorData.Name);
+        this.Skill = new SkillConfig(
+            actorSkillTable: dataSet.Tables["config_actorskill"],
+            activeSkillTable: dataSet.Tables["config_activeskill"], 
+            passiveSkillTable: dataSet.Tables["config_passiveskill"],
+            triggerSkillTable: dataSet.Tables["config_triggerskill"],
+            buffTable: dataSet.Tables["config_buff"]);
     }
 
     public void Test()
