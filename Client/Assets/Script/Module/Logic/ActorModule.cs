@@ -12,14 +12,14 @@ public sealed class ActorModule
 
     public ActorModule()
     {
-        //Dictionary<byte,long> battleArray = new Dictionary< byte,long>();
-        //battleArray.Add(1,10000);
-        //battleArray.Add(2,10001);
-        //battleArray.Add(3,10002);
-        //battleArray.Add(6,10003);
-        //battleArray.Add(7,10004);
-        //battleArray.Add(8,10005);
-        //this.SetBattleArray(battleArray);
+        Dictionary<byte, long> battleArray = new Dictionary<byte, long>();
+        battleArray.Add(1, 10000);
+        battleArray.Add(2, 10001);
+        battleArray.Add(3, 10002);
+        battleArray.Add(6, 10003);
+        battleArray.Add(7, 10004);
+        battleArray.Add(8, 10005);
+        this.SetBattleArray(battleArray);
     }
 
     #region private methods

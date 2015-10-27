@@ -158,7 +158,6 @@ public class ActorBevBase : MonoBehaviour
     public void ActorMovesComplete()
     {
         Debug.Log("出招结束");
-        FightMgr.Instance.CurMovesComplete();
     }
 
     /// <summary>

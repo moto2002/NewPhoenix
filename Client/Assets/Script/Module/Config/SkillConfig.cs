@@ -12,9 +12,9 @@ public sealed class SkillConfig
 
     public SkillConfig(DataTable actorSkillTable, DataTable activeSkillTable, DataTable passiveSkillTable, DataTable triggerSkillTable, DataTable buffTable)
     {
+        this.ParseActorSkillTable(actorSkillTable);
         //2015.10.27:需要填表
         return;
-        this.ParseActorSkillTable(actorSkillTable);
         this.ParseActiveSkillTable(activeSkillTable);
         this.ParsePassiveSkillTable(passiveSkillTable);
         this.ParseTriggerSkillTable(triggerSkillTable);

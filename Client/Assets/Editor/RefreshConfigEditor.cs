@@ -107,7 +107,7 @@ public sealed class RefreshConfigEditor : Editor
 
     private static MySqlDataAdapter GetTableData(string tableName)
     {
-        Debug.Log("query : " + tableName);
+        //Debug.Log("query : " + tableName);
         string query = string.Format(ConfigConst.TableQuery, tableName);
         return new MySqlDataAdapter(query, m_Connection);
     }

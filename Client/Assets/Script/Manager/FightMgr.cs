@@ -3,6 +3,16 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Linq;
 
+
+/*
+2015.10.28-log:
+声明：
+    1.Round 游戏回合
+    2.Actor 角色
+    3.ActorMoves 角色出招，即角色的“回合”
+    4.ActorAttack   角色攻击，即普通攻击或者技能攻击
+*/
+
 public class FightMgr : MonoBehaviour
 {
     public static FightMgr Instance { get; private set; }
@@ -13,8 +23,7 @@ public class FightMgr : MonoBehaviour
     public Dictionary<ActorBevBase, GridData> EnemyBattleArray { get; private set; }//敌人阵容
     public Dictionary<ActorBevBase, GridData> PlayerBattleArray { get; private set; }//玩家阵容
 
-         private FightGridComponent m_GridComp;//网格
-   
+    private FightGridComponent m_GridComp;//网格
     private byte m_RandCount;//回合数
     private bool m_GameOver;//是否游戏结束
     private ActorBevBase m_CurMovesActor;
@@ -24,71 +33,22 @@ public class FightMgr : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        this.m_GridComp = this.GetComponent<FightGridComponent>();
     }
-
     void Start()
     {
-        this.InitPlayer();
-        this.InitEnemy();
-        UIController.Instance.OpenPanel(UIPanelType.FightPanel);
-        StartCoroutine(this.StartGame());
+        this.Init();
     }
 
     #endregion
 
     #region private methods
-
-    /// <summary>
-    /// 初始化玩家
-    /// </summary>
-    private void InitPlayer()
-    {
-        this.PlayerBattleArray = new Dictionary<ActorBevBase, GridData>();
-        foreach (KeyValuePair<byte, long> kv in LogicController.Instance.Actor.GetBattleArray())
-        {
-            byte index = kv.Key;
-            long uid = kv.Value;
-            GridData gridData = this.m_GridComp.ConvertIndexToGridData(index);
-            PlayerBev playerBev = this.InstantiateActor<PlayerBev>(index,LogicController.Instance.Actor.GetActorLogicDataByUID(uid).ID);
-            playerBev.transform.SetParent(this.PlayerParent);
-            playerBev.transform.position = this.m_GridComp.ConvertGridToPosition(gridData,ActorType.Player);
-            playerBev.transform.localRotation = Quaternion.identity;
-            playerBev.transform.localScale = Vector3.one;
-            playerBev.InitPlayer(uid);
-            this.PlayerBattleArray.Add(playerBev, gridData);
-        }
-    }
-
-    /// <summary>
-    /// 初始化敌人
-    /// </summary>
-    private void InitEnemy()
-    {
-        this.EnemyBattleArray = new Dictionary<ActorBevBase, GridData>();
-        LevelLogicData levelLogicData = LogicController.Instance.Level.GetLevelLogicDataByID(1000);
-        foreach (KeyValuePair<byte, int> kv in levelLogicData.BattleArray)
-        {
-            byte index = kv.Key;
-            int id = kv.Value;
-            GridData gridData = this.m_GridComp.ConvertIndexToGridData(index);
-            EnemyBev enemyBev = this.InstantiateActor<EnemyBev>(index,id);
-            enemyBev.transform.SetParent(this.EnemyParent);
-            enemyBev.transform.position = this.m_GridComp.ConvertGridToPosition(gridData,ActorType.Enemy );
-            enemyBev.transform.localRotation = Quaternion.identity;
-            enemyBev.transform.localScale = Vector3.one;
-            enemyBev.InitEnemy(id);
-            this.EnemyBattleArray.Add(enemyBev, gridData);
-        }
-    }
-
     /// <summary>
     /// 复制预物体
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="id"></param>
     /// <returns></returns>
-    private T InstantiateActor<T>(byte index,int id) where T : ActorBevBase
+    private T InstantiateActor<T>(byte index, int id) where T : ActorBevBase
     {
         ActorData actorData = LogicController.Instance.Actor.GetActorDataByID(id);
         GameObject actor = PoolMgr.Instance.GetModel(AssetPathConst.Actor + actorData.Model);
@@ -97,20 +57,6 @@ public class FightMgr : MonoBehaviour
         bev.Index = index;
         return bev;
     }
-
-    /// <summary>
-    /// 游戏进程
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator Gaming()
-    {
-        while (!this.m_GameOver)
-        {
-
-            yield return null;
-        }
-    }
-
     /// <summary>
     /// 获取下一个出招的角色
     /// </summary>
@@ -148,32 +94,6 @@ public class FightMgr : MonoBehaviour
     }
 
     /// <summary>
-    /// 回合结束
-    /// </summary>
-    private void EndOfRound()
-    {
-        this.ResetActor();
-        this.m_RandCount++;
-        Debug.Log("第" + (this.m_RandCount + 1) + "回合");
-        if (this.m_RandCount == FightConst.MaxRoundCount)
-        {
-            this.GameOver();
-        }
-        else
-        {
-            this.NextActorMoves();
-        }
-    }
-
-    /// <summary>
-    /// 游戏结束
-    /// </summary>
-    private void GameOver()
-    {
-        this.m_GameOver = true;
-    }
-
-    /// <summary>
     /// 重置敌人和玩家
     /// </summary>
     private void ResetActor()
@@ -199,47 +119,19 @@ public class FightMgr : MonoBehaviour
         });
     }
 
-    private void NextActorMoves()
-    {
-        ActorBevBase actor = this.GetNextMovesActor();
-        if (actor == null)
-        {
-            //回合结束
-            Debug.Log("回合结束");
-            this.EndOfRound();
-        }
-        else
-        {
-            //出招
-            this.ActorMoves(actor);
-            this.m_CurMovesActor = actor;
-        }
-    }
-
-    /// <summary>
-    /// 开始游戏
-    /// </summary>
-    /// <returns></returns>
-    private IEnumerator StartGame()
-    {
-        yield return null;
-        Debug.Log("第" + (this.m_RandCount + 1) + "回合");
-        this.NextActorMoves();
-    }
-
     private ActorBevBase GetTarget(ActorBevBase actorBev)
     {
         switch (actorBev.Type)
         {
             case ActorType.Enemy:
-                return this.GetTarget(this.EnemyBattleArray[ actorBev], this.PlayerBattleArray);
+                return this.GetTarget(this.EnemyBattleArray[actorBev], this.PlayerBattleArray);
             case ActorType.Player:
-                return this.GetTarget(this.PlayerBattleArray[ actorBev], this.EnemyBattleArray);
+                return this.GetTarget(this.PlayerBattleArray[actorBev], this.EnemyBattleArray);
         }
         return null;
     }
 
-    private ActorBevBase GetTarget(GridData gridData,Dictionary<ActorBevBase,GridData> targetDic)
+    private ActorBevBase GetTarget(GridData gridData, Dictionary<ActorBevBase, GridData> targetDic)
     {
         byte minDistance = this.m_GridComp.GetMaxMagnitudeDistance();
         byte minIndex = this.m_GridComp.GetMaxIndex();
@@ -247,7 +139,7 @@ public class FightMgr : MonoBehaviour
         foreach (KeyValuePair<ActorBevBase, GridData> kv in targetDic)
         {
             ActorBevBase acotrBev = kv.Key;
-            byte distance = this.m_GridComp.CalculateMagnitudeDistance(gridData,kv.Value,true);
+            byte distance = this.m_GridComp.CalculateMagnitudeDistance(gridData, kv.Value, true);
             if (distance < minDistance ||
                (distance == minDistance && acotrBev.Index < minIndex))
             {
@@ -276,11 +168,185 @@ public class FightMgr : MonoBehaviour
     #endregion
 
     #region public methods
+    #endregion
 
-    public void CurMovesComplete()
+    #region 游戏流程
+    /// <summary>
+    /// 初始化
+    /// </summary>
+    private void Init()
     {
-        this.NextActorMoves();
+        this.InitScene();
+        this.InitPlayer();
+        this.InitEnemy();
+        this.InitUI();
+    }
+    /// <summary>
+    /// 初始化玩家
+    /// </summary>
+    private void InitPlayer()
+    {
+        this.PlayerBattleArray = new Dictionary<ActorBevBase, GridData>();
+        foreach (KeyValuePair<byte, long> kv in LogicController.Instance.Actor.GetBattleArray())
+        {
+            byte index = kv.Key;
+            long uid = kv.Value;
+            GridData gridData = this.m_GridComp.ConvertIndexToGridData(index);
+            PlayerBev playerBev = this.InstantiateActor<PlayerBev>(index, LogicController.Instance.Actor.GetActorLogicDataByUID(uid).ID);
+            playerBev.transform.SetParent(this.PlayerParent);
+            playerBev.transform.position = this.m_GridComp.ConvertGridToPosition(gridData, ActorType.Player);
+            playerBev.transform.localRotation = Quaternion.identity;
+            playerBev.transform.localScale = Vector3.one;
+            playerBev.InitPlayer(uid);
+            this.PlayerBattleArray.Add(playerBev, gridData);
+        }
     }
 
-    #endregion
+    /// <summary>
+    /// 初始化敌人
+    /// </summary>
+    private void InitEnemy()
+    {
+        this.EnemyBattleArray = new Dictionary<ActorBevBase, GridData>();
+        LevelLogicData levelLogicData = LogicController.Instance.Level.GetLevelLogicDataByID(1000);
+        foreach (KeyValuePair<byte, int> kv in levelLogicData.BattleArray)
+        {
+            byte index = kv.Key;
+            int id = kv.Value;
+            GridData gridData = this.m_GridComp.ConvertIndexToGridData(index);
+            EnemyBev enemyBev = this.InstantiateActor<EnemyBev>(index, id);
+            enemyBev.transform.SetParent(this.EnemyParent);
+            enemyBev.transform.position = this.m_GridComp.ConvertGridToPosition(gridData, ActorType.Enemy);
+            enemyBev.transform.localRotation = Quaternion.identity;
+            enemyBev.transform.localScale = Vector3.one;
+            enemyBev.InitEnemy(id);
+            this.EnemyBattleArray.Add(enemyBev, gridData);
+        }
+    }
+    /// <summary>
+    /// 初始化场景
+    /// </summary>
+    private void InitScene()
+    {
+        this.m_GridComp = this.GetComponent<FightGridComponent>();
+    }
+    /// <summary>
+    /// 初始化UI
+    /// </summary>
+    private void InitUI()
+    {
+        UIController.Instance.OpenPanel(UIPanelType.FightPanel);
+    }
+    /// <summary>
+    /// 创建天气
+    /// </summary>
+    private void CreateWeather()
+    { }
+    /// <summary>
+    /// 先机技能
+    /// </summary>
+    private void FirstMoves()
+    {
+    }
+    /// <summary>
+    /// 回合中
+    /// </summary>
+    private void Rounding()
+    {
+        if (this.SearchMovesActor())
+        {
+            this.RoundEnd();
+        }
+        else
+        {
+            this.ActorMovesStart();
+            this.ActorMovesing();
+            this.ActorMovesEnd();
+        }
+    }
+    /// <summary>
+    /// 角色出手开始
+    /// </summary>
+    private void ActorMovesStart()
+    { }
+    /// <summary>
+    /// 角色出手中
+    /// </summary>
+    private void ActorMovesing()
+    { }
+    /// <summary>
+    /// 角色出手结束
+    /// </summary>
+    private void ActorMovesEnd()
+    { }
+
+    /// <summary>
+    /// 回合结束
+    /// </summary>
+    private void RoundEnd()
+    {
+        if (this.CheckIsGameOver())
+        {
+            this.GameOver();
+        }
+        else
+        {
+            //回合数加一 
+            this.m_RandCount++;
+            //重置参数
+            this.ResetActor();
+            //进入下一回合
+            this.Rounding();
+        }
+    }
+    /// <summary>
+    /// 搜索出手角色
+    /// </summary>
+    /// <returns></returns>
+    private bool SearchMovesActor()
+    {
+        return false;
+    }
+    /// <summary>
+    /// 检测游戏是否结束
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckIsGameOver()
+    {
+        return this.m_RandCount >= FightConst.MaxRoundCount;
+    }
+    /// <summary>
+    /// 游戏结束
+    /// </summary>
+    private void GameOver()
+    {
+        this.m_GameOver = true;
+        if (this.CheckResult())
+        {
+            this.Victory();
+        }
+        else
+        {
+            this.Fail();
+        }
+    }
+    /// <summary>
+    /// 检测输赢
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckResult()
+    {
+        return false;
+    }
+    /// <summary>
+    /// 胜利
+    /// </summary>
+    private void Victory()
+    { }
+    /// <summary>
+    /// 失败
+    /// </summary>
+    private void Fail()
+    { }
+    #endregion 游戏流程
 }

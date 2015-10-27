@@ -35,7 +35,7 @@ public sealed class ConfigController
             Debug.Log("文件解压成功");
             DataTable config_actor = dataSet.Tables["config_actor"];
             DataRow row = config_actor.Rows[0];
-            Debug.Log("ID " + row["ID"] + " Name " + row["Name"]);
+            Debug.Log("ID " + row["ID"] + " Name " + row["Name"] + " Model " + row["Model"]);
         }
         this.Actor = new ActorConfig(dataSet.Tables["config_actor"]);
         this.Skill = new SkillConfig(
@@ -45,9 +45,6 @@ public sealed class ConfigController
             triggerSkillTable: dataSet.Tables["config_triggerskill"],
             buffTable: dataSet.Tables["config_buff"]);
     }
-
-    public void Test()
-    { }
 
     private DataSet GetDataSet()
     {
