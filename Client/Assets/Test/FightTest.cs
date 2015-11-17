@@ -5,7 +5,7 @@ public class FightTest : MonoBehaviour
 
     void Start()
     {
-        LoadLevelController.Instance.LoadLevel(GameSceneType.PVEScene);
+        LoadSceneCtrller.Instance.LoadLevel(GameSceneType.PVEScene);
     }
 
     #endregion

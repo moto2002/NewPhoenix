@@ -22,4 +22,14 @@ public enum SkillType : byte
     /// 触发
     /// </summary>
     Trigger = 3,
+
+    /// <summary>
+    /// 天气技能
+    /// </summary>
+    Weather = 4,
+
+    /// <summary>
+    /// 先机技能
+    /// </summary>
+    First = 5,
 }

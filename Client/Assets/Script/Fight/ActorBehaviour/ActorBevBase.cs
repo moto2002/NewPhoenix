@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
 public class ActorBevBase : MonoBehaviour
 {
@@ -10,10 +12,16 @@ public class ActorBevBase : MonoBehaviour
     public ActorLogicData ActorLogicData { get; private set; }
     public byte Index { get; set; }
     public bool IsDead { get; private set; }
+    public GridData GridData { get; private set; }
 
     private bool m_IsMoves;//是否出招
     private float m_iTweenMoveTime =0.2f;
     private Vector3 m_DefaultPosition;
+    private SkillBase m_NormalAttack;
+    private SkillBase m_CurSkill;
+    private SkillBase m_WeatherSkill;
+    private SkillBase m_FirstSkill;
+    private List<SkillBase> m_SkillList;
 
     #region MonoBehaviour methods
 
@@ -22,12 +30,12 @@ public class ActorBevBase : MonoBehaviour
         this.MyTransform = this.transform;
         this.MyGameObject = this.gameObject;
         this.SetActorType();
+       
     }
 
     void Start()
     {
-        this.ActorAI = this.MyGameObject.AddComponent<ActorAIBase>();
-        this.ActorAI.InitStateMachine(this);
+       
     }
 
     #endregion
@@ -57,25 +65,45 @@ public class ActorBevBase : MonoBehaviour
     {
         this.ActorLogicData = data;
         this.m_DefaultPosition = this.MyTransform.position;
+
+        this.ActorAI = this.MyGameObject.AddComponent<ActorAIBase>();
+        this.ActorAI.InitStateMachine(this);
+
+        if (this.HasWeatherSkill)
+        {
+            this.m_WeatherSkill = this.AddComponent<WeatherSkill>();
+            this.m_WeatherSkill.Init(this, data.GetWeatherSkill());
+        }
+
+        if (this.HasFirstSkill)
+        {
+            this.m_FirstSkill = this.AddComponent<FirstSkill>();
+            this.m_FirstSkill.Init(this, data.GetFirstSkill());
+        }
+
+        this.m_NormalAttack = this.AddComponent<NormalAttack>();
+        this.m_NormalAttack.Init(this,data.GetNormalAttack());
     }
 
     /// <summary>
     /// 初始化
     /// </summary>
     /// <param name="data"></param>
-    public void InitPlayer(long uid)
+    public void InitPlayer(long uid,GridData gridData)
     {
-        this.Init(LogicController.Instance.Actor.GetActorLogicDataByUID(uid));
+        this.Init(LogicCtrller.Instance.Actor.GetActorLogicDataByUID(uid));
+        this.GridData = gridData;
     }
 
     /// <summary>
     /// 初始化
     /// </summary>
     /// <param name="data"></param>
-    public void InitEnemy(int id)
+    public void InitEnemy(int id,GridData gridData)
     {
-        ActorData actorData = LogicController.Instance.Actor.GetActorDataByID(id);
-        ActorLogicData actorLogicData = new ActorLogicData(0, actorData);
+        ActorData actorData = LogicCtrller.Instance.Actor.GetActorDataByID(id);
+        List<SkillLogicDataBase> skillList = new List<SkillLogicDataBase>();
+        ActorLogicData actorLogicData = new ActorLogicData(0, actorData,skillList);
         this.Init(actorLogicData);
     }
 
@@ -174,4 +202,100 @@ public class ActorBevBase : MonoBehaviour
 
 
     #endregion
+
+    #region 出手
+
+    public void Moves()
+    {
+        this.MovesStart();
+    }
+
+    /// <summary>
+    /// 出手前：
+    /// 增益buff
+    /// 回合前结算的dot
+    /// </summary>
+    private void MovesStart()
+    {
+        this.Moving();
+    }
+
+    /// <summary>
+    /// 出手中：
+    /// 普通攻击
+    /// 特殊技能
+    /// 对手的响应技能
+    /// </summary>
+    private void Moving()
+    {
+        this.CheckSkill();
+        this.m_CurSkill.Moves();
+    }
+
+    /// <summary>
+    /// 出手后：
+    /// 增益buff
+    /// 回合后结算的dot
+    /// 部分debuff消失的阶段
+    /// </summary>
+    private void MovesEnd()
+    { }
+
+    /// <summary>
+    /// 检测是否要使用技能
+    /// </summary>
+    private void CheckSkill()
+    {
+        this.m_CurSkill = this.m_NormalAttack;
+
+    }
+
+
+    #endregion
+
+    #region WeatherSkill
+
+    public bool HasWeatherSkill
+    {
+        get
+        {
+            return this.ActorLogicData.HasWeatherSkill;
+        }
+    }
+
+    public WeatherType? GetWeatherFromWeatherSkill
+    {
+        get
+        {
+            if (this.HasWeatherSkill)
+            {
+                WeatherSkillLogicData data = (WeatherSkillLogicData)this.ActorLogicData.GetWeatherSkill();
+                return data.Weather;
+            }
+            return null;
+        }
+    }
+
+    public void CastWeatherSkill()
+    {
+        this.m_WeatherSkill.Moves();
+    }
+
+    #endregion;
+
+    #region FirstSkill
+
+    public bool HasFirstSkill
+    {
+        get { return this.ActorLogicData.HasFirstSkill; }
+    }
+
+    public void CastFirstSkill()
+    {
+        this.m_FirstSkill.Moves();
+    }
+
+    #endregion
+
+
 }

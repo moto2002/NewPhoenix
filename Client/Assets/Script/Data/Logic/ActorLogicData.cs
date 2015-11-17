@@ -1,11 +1,17 @@
-﻿public class ActorLogicData
+﻿using System.Collections.Generic;
+using System.Linq;
+
+public class ActorLogicData
 {
     private ActorData m_ActorData;
+    private List<SkillLogicDataBase> m_SkillList;
 
-    public ActorLogicData(long uid, ActorData heroData)
+
+    public ActorLogicData(long uid, ActorData actorData, List<SkillLogicDataBase> skillList)
     {
         this.UID = uid;
-        this.m_ActorData = heroData;
+        this.m_ActorData = actorData;
+        this.m_SkillList = skillList;
     }
 
     #region public methods
@@ -19,6 +25,50 @@
     {
         return 1;
     }
+
+    #region Skill
+
+    public SkillLogicDataBase GetNormalAttack()
+    {
+        return this.GetSkillByType(SkillType.Normal);
+    }
+    public SkillLogicDataBase GetWeatherSkill()
+    {
+        if (this.HasWeatherSkill)
+        {
+            return this.m_SkillList.First(a => a.SkillType == SkillType.Normal);
+        }
+        return null;
+    }
+    public SkillLogicDataBase GetFirstSkill()
+    {
+        if (this.HasFirstSkill)
+        {
+            return this.m_SkillList.First(a => a.SkillType == SkillType.Normal);
+        }
+        return null;
+    }
+    private SkillLogicDataBase GetSkillByType(SkillType type)
+    {
+        return this.m_SkillList.FirstOrDefault(a => a.SkillType == type);
+    }
+
+    public bool HasWeatherSkill
+    {
+        get
+        {
+            return this.m_SkillList.Any(a => a.SkillType == SkillType.Weather);
+        }
+    }
+
+    public bool HasFirstSkill
+    {
+        get
+        {
+            return this.m_SkillList.Any(a => a.SkillType == SkillType.First);
+        }
+    }
+    #endregion
 
     #endregion
 

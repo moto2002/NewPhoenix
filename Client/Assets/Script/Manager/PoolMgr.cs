@@ -19,7 +19,7 @@ public sealed class PoolMgr : MonoBehaviour
         public GameObject GO;
     }
     private Dictionary<string, UnityEngine.Object> m_AssetDic = new Dictionary<string, UnityEngine.Object>();
-    private Dictionary<UIPanelType, string> m_PanelAssetDic = new Dictionary<UIPanelType, string>();
+    private Dictionary<PanelType, string> m_PanelAssetDic = new Dictionary<PanelType, string>();
     private Transform m_Transform;
 
     #region MonoBehaviour methods
@@ -41,31 +41,31 @@ public sealed class PoolMgr : MonoBehaviour
         //Login
         //Main
         //Fight
-        this.RegisterPanelForFight(UIPanelType.FightPanel);
+        this.RegisterPanelForFight(PanelType.FightPanel);
         //Common
     }
 
-    private void RegisterPanelForLogin(UIPanelType type)
+    private void RegisterPanelForLogin(PanelType type)
     {
         this.ReigsterPanelAsset(type, AssetPathConst.Panel_Login + type);
     }
 
-    private void RegisterPanelForMain(UIPanelType type)
+    private void RegisterPanelForMain(PanelType type)
     {
         this.ReigsterPanelAsset(type, AssetPathConst.Panel_Main + type);
     }
 
-    private void RegisterPanelForFight(UIPanelType type)
+    private void RegisterPanelForFight(PanelType type)
     {
         this.ReigsterPanelAsset(type, AssetPathConst.Panel_Fight + type);
     }
 
-    private void RegisterPanelForCommon(UIPanelType type)
+    private void RegisterPanelForCommon(PanelType type)
     {
         this.ReigsterPanelAsset(type, AssetPathConst.Panel_Common + type);
     }
 
-    private void ReigsterPanelAsset(UIPanelType type, string assetName)
+    private void ReigsterPanelAsset(PanelType type, string assetName)
     {
         if (this.m_PanelAssetDic.ContainsKey(type)) this.m_PanelAssetDic[type] = assetName;
         else this.m_PanelAssetDic.Add(type, assetName);
@@ -188,9 +188,9 @@ public sealed class PoolMgr : MonoBehaviour
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public PanelBase GetPanel(UIPanelType type)
+    public PanelBase GetPanel(PanelType type)
     {
-        if (type == UIPanelType.None || !this.m_PanelAssetDic.ContainsKey(type))
+        if (type == PanelType.None || !this.m_PanelAssetDic.ContainsKey(type))
         {
             return null;
         }

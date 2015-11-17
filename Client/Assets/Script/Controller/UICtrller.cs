@@ -1,17 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Collections;
-using System;
-using System.Linq;
 
-public class UIController : MonoBehaviour
+public class UICtrller : MonoBehaviour
 {
-    public static UIController Instance { get; private set; }
+    public static UICtrller Instance { get; private set; }
     public Camera UICam;
     public Camera MainCamera { get { return this.UICam; } }
     public Transform TopPanel;
 
-    private Dictionary<UIPanelType,PanelBase> m_OpenedPanelDic = new Dictionary<UIPanelType, PanelBase>();
+    private Dictionary<PanelType,PanelBase> m_OpenedPanelDic = new Dictionary<PanelType, PanelBase>();
     private bool m_BackupUICameraStatus;
     private bool m_Dispose;
     private Stack<HistoryPanelLogicData> m_HistoryPanelStack = new Stack<HistoryPanelLogicData>();
@@ -37,7 +34,7 @@ public class UIController : MonoBehaviour
     private int GetTopDepth()
     {
         int topDepth = int.MinValue;
-        foreach (KeyValuePair<UIPanelType,PanelBase> kv in this.m_OpenedPanelDic)
+        foreach (KeyValuePair<PanelType,PanelBase> kv in this.m_OpenedPanelDic)
         {
             int depth = kv.Value.GetTopDepth();
             if (depth > topDepth)
@@ -50,14 +47,14 @@ public class UIController : MonoBehaviour
 
     #endregion
 
-    public PanelBase GetOpenedPanelByType(UIPanelType type)
+    public PanelBase GetOpenedPanelByType(PanelType type)
     {
         return (this.m_OpenedPanelDic.ContainsKey(type))? this.m_OpenedPanelDic[type] : null;
     }
 
     #region OpenPanel
 
-    public void OpenPanel(UIPanelType type, PanelParamBase panelParam = null,PanelEffectType openEffectType = PanelEffectType.Open)
+    public void Open(PanelType type, PanelParamBase panelParam = null,PanelEffectType openEffectType = PanelEffectType.Open)
     {
         PanelBase panel = null;
         int newDepth = 0;
@@ -85,7 +82,7 @@ public class UIController : MonoBehaviour
 
     #region ClosePanel
 
-    public void ClosePanel(UIPanelType type,PanelEffectType closeEffectType = PanelEffectType.Close)
+    public void ClosePanel(PanelType type,PanelEffectType closeEffectType = PanelEffectType.Close)
     {
         if (this.m_OpenedPanelDic.ContainsKey(type))
         {
@@ -108,7 +105,7 @@ public class UIController : MonoBehaviour
     }
 
 
-    public void TryClosePanel(UIPanelType type)
+    public void TryClosePanel(PanelType type)
     {
         if (this.m_OpenedPanelDic.ContainsKey(type))
         {
@@ -124,7 +121,7 @@ public class UIController : MonoBehaviour
     {
         if (this.m_OpenedPanelDic != null && this.m_OpenedPanelDic.Count > 0)
         {
-            foreach (KeyValuePair<UIPanelType, PanelBase> kv in this.m_OpenedPanelDic)
+            foreach (KeyValuePair<PanelType, PanelBase> kv in this.m_OpenedPanelDic)
             {
                 kv.Value.Dispose();
             }
@@ -137,7 +134,7 @@ public class UIController : MonoBehaviour
 
     #region NotifyPanel 
 
-    public void NotifyPanel(UIPanelType type, string methodName, object param = null)
+    public void NotifyPanel(PanelType type, string methodName, object param = null)
     {
         PanelBase panel = this.GetOpenedPanelByType(type);
         if (panel != null)
@@ -149,7 +146,7 @@ public class UIController : MonoBehaviour
 
     #region History
 
-    public void RecordHistory(UIPanelType panel)
+    public void RecordHistory(PanelType panel)
     {
         this.RecordHistory(new HistoryPanelLogicData(panel) );
     }
@@ -169,7 +166,7 @@ public class UIController : MonoBehaviour
 
     private void OpenHistory(HistoryPanelLogicData history)
     {
-        this.OpenPanel(history.Panel,history.PanelParam,PanelEffectType.OpenByCloseOther);
+        this.Open(history.Panel,history.PanelParam,PanelEffectType.OpenByCloseOther);
         if (history.SecondPanel != null)
         {
             this.OpenHistory(history.SecondPanel);
@@ -186,7 +183,7 @@ public class UIController : MonoBehaviour
 
     private void OpenHistory(HistoryPanelLogicData history, PanelParamBase newPanelParam)
     {
-        this.OpenPanel(history.Panel, newPanelParam);
+        this.Open(history.Panel, newPanelParam);
         if (history.SecondPanel != null)
         {
             this.OpenHistory(history.SecondPanel);

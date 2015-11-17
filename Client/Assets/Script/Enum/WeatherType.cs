@@ -1,6 +1,9 @@
 ﻿public enum WeatherType : byte
 {
-    None = 0,
+    /// <summary>
+    /// 默认晴天？
+    /// </summary>
+    Default = 0,
 
     /// <summary>
     /// 大风

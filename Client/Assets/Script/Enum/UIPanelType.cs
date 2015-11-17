@@ -1,4 +1,4 @@
-﻿public enum UIPanelType : byte
+﻿public enum PanelType : byte
 {
     None,
 
@@ -7,7 +7,17 @@
     /// <summary>
     /// 战斗面板
     /// </summary>
-    FightPanel,
+    Fight,
+
+    /// <summary>
+    /// 胜利
+    /// </summary>
+    Victory,
+
+    /// <summary>
+    /// 失败
+    /// </summary>
+    Fail,
 
     #endregion
 

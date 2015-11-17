@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class LoadLevelController : MonoBehaviour
+public sealed class LoadSceneCtrller : MonoBehaviour
 {
-    public static LoadLevelController Instance { get; private set; }
+    public static LoadSceneCtrller Instance { get; private set; }
     public GameSceneType CurrentScene { get; private set; }
 
     #region MonoBehaviour methods
@@ -45,7 +45,7 @@ public sealed class LoadLevelController : MonoBehaviour
 
     private void ClearUI()
     {
-        UIController.Instance.CloseAllOpendPanel();
+        UICtrller.Instance.CloseAllOpendPanel();
     }
 
     #endregion

@@ -81,7 +81,7 @@ public static class MathUtils
 
     public static Rect GetTouchRect(Vector3 position, Vector2 touchCenter, Vector2 touchSize)
     {
-        Vector2 screenPoint = UIController.Instance.MainCamera.WorldToScreenPoint(position);
+        Vector2 screenPoint = UICtrller.Instance.MainCamera.WorldToScreenPoint(position);
         Vector2 GUIPoint = screenPoint.GetGUIPosition();
         Vector2 adjustPoint = GUIPoint.AdjustScreen();
         Rect rect = new Rect(adjustPoint.x + touchCenter.x - touchSize.x / 2, adjustPoint.y + touchCenter.y - touchSize.y / 2, touchSize.x, touchSize.y);

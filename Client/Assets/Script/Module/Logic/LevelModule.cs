@@ -3,6 +3,8 @@
 public sealed class LevelModule
 {
     private Dictionary<int, LevelLogicData> m_LevelDic;
+    public int CurLevelID { get; private set; }
+
     public LevelModule()
     {
         this.InitLevel();
@@ -19,7 +21,12 @@ public sealed class LevelModule
         level0BattleArray.Add(7,2003);
         level0BattleArray.Add(8,2004);
         level0BattleArray.Add(9,2005);
-        LevelData levelData0 = new LevelData(1000, "关卡0","关卡0描述", "", "", level0BattleArray);
+        LevelData levelData0 = new LevelData()
+        {
+            ID = 1000,
+            BattleArray = level0BattleArray,
+            Weather = WeatherType.Default
+        };
         LevelLogicData levelLogicData0 = new LevelLogicData(levelData0);
         this.m_LevelDic = new Dictionary<int, LevelLogicData>();
         this.m_LevelDic.Add(1000,levelLogicData0);
@@ -34,6 +41,12 @@ public sealed class LevelModule
         return this.m_LevelDic.ContainsKey(id) ? this.m_LevelDic[id] : null;
     }
 
+    public LevelLogicData GetCurLevelLogicData()
+    {
+        if (this.CurLevelID == 0)
+            return null;
+        return this.GetLevelLogicDataByID(this.CurLevelID);
+    }
 
     #endregion
 }

@@ -8,6 +8,8 @@ public class LevelLogicData
     public string Icon { get { return this.m_LevelData.Icon; } }
     public string AssetName { get { return this.m_LevelData.AssetName; } }
     public Dictionary<byte,int> BattleArray { get { return this.m_LevelData.BattleArray; } }
+    public WeatherType Weather { get { return this.m_LevelData.Weather; } }
+
     private LevelData m_LevelData;
     public LevelLogicData(LevelData levelData)
     {

@@ -162,15 +162,22 @@ public class FightGridComponent : ComponentBase
         return (byte)(Mathf.Max(this.EnemyZGridCount, this.PlayerZGridCount) * this.XGridCount - 1);
     }
 
-    public byte CalculateMagnitudeDistance(GridData grid0, GridData grid1, bool isTwoCamp)
+    /// <summary>
+    /// 计算两个格子之间的距离的平方和
+    /// </summary>
+    /// <param name="grid1"></param>
+    /// <param name="grid2"></param>
+    /// <param name="isTwoCamp"表示是否为两个阵营的格子></param>
+    /// <returns></returns>
+    public byte CalculateMagnitudeDistance(GridData grid1, GridData grid2, bool isTwoCamp)
     {
         if (isTwoCamp)
         {
-            return (byte)(Mathf.Pow(grid0.XGrid - grid1.XGrid, 2) + Mathf.Pow(grid0.ZGrid + grid1.ZGrid + 1, 2));
+            return (byte)(Mathf.Pow(grid1.XGrid - grid2.XGrid, 2) + Mathf.Pow(grid1.ZGrid + grid2.ZGrid + 1, 2));
         }
         else
         {
-            return (byte)(Mathf.Pow(grid0.XGrid - grid1.XGrid, 2) + Mathf.Pow(grid0.ZGrid - grid1.ZGrid, 2));
+            return (byte)(Mathf.Pow(grid1.XGrid - grid2.XGrid, 2) + Mathf.Pow(grid1.ZGrid - grid2.ZGrid, 2));
         }
     }
 

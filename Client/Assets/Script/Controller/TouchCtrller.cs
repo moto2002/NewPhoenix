@@ -3,18 +3,18 @@
 /// <summary>
 /// 观察者模式
 /// </summary>
-public sealed class TouchController/*考虑要不要删*//* 考虑好了，不删。要使用TurnOn功能 、2015.01.16*/
+public sealed class TouchCtrller
 {
     #region Instance
 
-    private static TouchController m_Instance;
-    public static TouchController Instance
+    private static TouchCtrller m_Instance;
+    public static TouchCtrller Instance
     {
         get
         {
             if (m_Instance == null)
             {
-                m_Instance = new TouchController();
+                m_Instance = new TouchCtrller();
             }
             return m_Instance;
         }
@@ -46,7 +46,7 @@ public sealed class TouchController/*考虑要不要删*//* 考虑好了，不�
 
     #endregion
 
-    public TouchController()
+    public TouchCtrller()
     {
         this.m_SwipeStartList = new List<EasyTouch.SwipeStartHandler>();
         this.m_SwipeList = new List<EasyTouch.SwipeHandler>();

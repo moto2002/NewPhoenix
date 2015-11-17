@@ -6,7 +6,7 @@ using System;
 
 public abstract class PanelBase : UIBase, IPanel
 {
-    public UIPanelType ThisPanel { get; private set; }
+    public PanelType ThisPanel { get; private set; }
     private UIEffectBase m_PanelEffect;
 
     void OnDestory()
@@ -83,15 +83,15 @@ public abstract class PanelBase : UIBase, IPanel
     /// </summary>
     protected void CloseThisPanel(PanelEffectType closeEffectType = PanelEffectType.Close)
     {
-        if (this.ThisPanel == UIPanelType.None) { Debug.Log("this panel is none can't close!"); return; }
-        UIController.Instance.ClosePanel(this.ThisPanel, closeEffectType);
+        if (this.ThisPanel == PanelType.None) { Debug.Log("this panel is none can't close!"); return; }
+        UICtrller.Instance.ClosePanel(this.ThisPanel, closeEffectType);
     }
 
     #endregion
 
     #region public methods
 
-    public void Open(UIPanelType type, PanelParamBase panelParam, PanelEffectType effectType, int depth)
+    public void Open(PanelType type, PanelParamBase panelParam, PanelEffectType effectType, int depth)
     {
         this.ThisPanel = type;
         this.SetPanelDepth(depth);

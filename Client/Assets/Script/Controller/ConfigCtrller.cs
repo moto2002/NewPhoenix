@@ -7,27 +7,27 @@ using System.Data;
 using MySql.Data.MySqlClient;
 using ICSharpCode.SharpZipLib.Zip;
 
-public sealed class ConfigController
+public sealed class ConfigCtrller
 {
-    public static ConfigController Instance
+    public static ConfigCtrller Instance
     {
         get
         {
             if (m_Instance == null)
             {
-                m_Instance = new ConfigController();
+                m_Instance = new ConfigCtrller();
             }
             return m_Instance;
         }
     }
-    private static ConfigController m_Instance;
+    private static ConfigCtrller m_Instance;
     public ActorConfig Actor { get; private set; }
     public SkillConfig Skill { get; private set; }
     //private DataSet m_DataSet;
 
     private MySqlConnection m_Connection;
 
-    public ConfigController()
+    public ConfigCtrller()
     {
         DataSet dataSet = this.GetDataSet();
         if (dataSet != null)

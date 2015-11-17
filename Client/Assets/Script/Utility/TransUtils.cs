@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public sealed class TransUtils
+public static class TransUtils
 {
     public static T FindChild<T>(T root, string name) where T : Component
     {
@@ -155,5 +155,10 @@ public sealed class TransUtils
                 collider.enabled = isEnable;
             }
         }
+    }
+
+    public static T AddComponent<T>(this MonoBehaviour comp) where T : Component
+    {
+        return (comp == null)?null:comp.gameObject.AddComponent<T>();
     }
 }
