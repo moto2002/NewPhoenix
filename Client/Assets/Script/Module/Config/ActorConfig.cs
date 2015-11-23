@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using System.Linq;
+
 
 public sealed class ActorConfig
 {
@@ -91,5 +93,10 @@ public sealed class ActorConfig
         }
         Debug.Log(string.Format( "ID {0} not exist",id));
         return null;
+    }
+
+    public List<ActorData> GetActors()
+    {
+        return this.m_ActorDic.Values.ToList();
     }
 }

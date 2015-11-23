@@ -136,4 +136,35 @@ public sealed class SkillConfig
         data.ChangeValue = row.IsNull("ChangeValue") ? (float?)null : float.Parse(row["ChangeValue"].ToString());
         data.ShieldType = row.IsNull("ShieldType") ? (ShieldType?)null : (ShieldType)Enum.Parse(typeof(ActorType), row["ShieldType"].ToString());
     }
+
+    public ActorSkillData GetActorSkillDataWithID(int id)
+    {
+        if (this.m_ActorSkillDic.ContainsKey(id))
+        {
+            return this.m_ActorSkillDic[id];
+        }
+        return null;
+    }
+
+    public SkillDataBase GetSkillDataBaseWithID(int id)
+    {
+        if (this.m_ActiveSkillDic.ContainsKey(id))
+        {
+            return this.m_ActiveSkillDic[id];
+        }
+        if (this.m_PassiveSkillDic.ContainsKey(id))
+        {
+            return this.m_PassiveSkillDic[id];
+        }
+        if (this.m_TriggerSkillDic.ContainsKey(id))
+        {
+            return this.m_TriggerSkillDic[id];
+        }
+        if (this.m_BuffDic.ContainsKey(id))
+        {
+            return this.m_BuffDic[id];
+        }
+        return null;
+    }
+
 }

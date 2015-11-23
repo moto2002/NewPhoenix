@@ -7,7 +7,7 @@ public class ActorLogicData
     private List<SkillLogicDataBase> m_SkillList;
 
 
-    public ActorLogicData(long uid, ActorData actorData, List<SkillLogicDataBase> skillList)
+    public ActorLogicData(string uid, ActorData actorData, List<SkillLogicDataBase> skillList)
     {
         this.UID = uid;
         this.m_ActorData = actorData;
@@ -72,7 +72,7 @@ public class ActorLogicData
 
     #endregion
 
-    public long UID { get; private set; }
+    public string  UID { get; private set; }
     public int ID { get { return this.m_ActorData.ID; } }
     public string Name { get { return this.m_ActorData.Name; } }//名称
     public string Description{ get { return this.m_ActorData.Description; } }//描述
