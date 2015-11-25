@@ -5,7 +5,6 @@ public abstract class SkillDataBase
     public string Name;//名称
     public string Description;//描述
     public string Icon;//图标
-    public SkillType SkillType;//技能类型
     public ActorType? EffectTarget;//作用于哪方
 
     //作用值，即效果
@@ -14,5 +13,6 @@ public abstract class SkillDataBase
     public float? ChangeValue;//数据
 
     public ShieldType? ShieldType;//护盾类型
+    public SkillType SkillType { get; protected set; }//技能类型
 
 }

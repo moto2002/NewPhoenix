@@ -137,7 +137,7 @@ public sealed class SkillConfig
         data.ShieldType = row.IsNull("ShieldType") ? (ShieldType?)null : (ShieldType)Enum.Parse(typeof(ActorType), row["ShieldType"].ToString());
     }
 
-    public ActorSkillData GetActorSkillDataWithID(int id)
+    public ActorSkillData GetActorSkillDataByID(int id)
     {
         if (this.m_ActorSkillDic.ContainsKey(id))
         {
@@ -146,7 +146,7 @@ public sealed class SkillConfig
         return null;
     }
 
-    public SkillDataBase GetSkillDataBaseWithID(int id)
+    public SkillDataBase GetSkillDataBaseByID(int id)
     {
         if (this.m_ActiveSkillDic.ContainsKey(id))
         {

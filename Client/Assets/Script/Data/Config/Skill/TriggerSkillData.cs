@@ -1,5 +1,9 @@
 ﻿public class TriggerSkillData : SkillDataBase
 {
+    public TriggerSkillData()
+    {
+        this.SkillType = SkillType.Trigger;
+    }
     public TriggerType TriggerType;//触发类型
     public byte TriggerValue;//触发的值
     public TriggerConditionType TriggerCondition;//触发条件

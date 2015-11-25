@@ -6,6 +6,11 @@ public class ActorLogicData
     private ActorData m_ActorData;
     private List<SkillLogicDataBase> m_SkillList;
 
+    public ActorLogicData( ActorData actorData, List<SkillLogicDataBase> skillList)
+    {
+        this.m_ActorData = actorData;
+        this.m_SkillList = skillList;
+    }
 
     public ActorLogicData(string uid, ActorData actorData, List<SkillLogicDataBase> skillList)
     {
@@ -66,6 +71,14 @@ public class ActorLogicData
         get
         {
             return this.m_SkillList.Any(a => a.SkillType == SkillType.First);
+        }
+    }
+
+    public List<SkillLogicDataBase> SkillList
+    {
+        get
+        {
+            return this.m_SkillList;
         }
     }
     #endregion

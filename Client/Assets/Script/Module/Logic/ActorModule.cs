@@ -6,68 +6,75 @@ public sealed class ActorModule
     /// <summary>
     /// UID,index
     /// </summary>
-    private Dictionary< byte,long> m_PlayerBattleArrayDic;
-    private Dictionary<long, ActorLogicData> m_ActorLogicDic;
-    private Dictionary<int, ActorData> m_ActorConfigDic;
+    private Dictionary< byte,string> m_PlayerBattleArrayDic;
+    private Dictionary<string , ActorLogicData> m_ActorLogicDataDic;
 
     public ActorModule()
     {
+        this.m_ActorLogicDataDic = new Dictionary<string, ActorLogicData>();
         List<ActorData> actorList = ConfigCtrller.Instance.Actor.GetActors();
-        int actorUID= 1;
-        int skillUID = 1;
+        string actorUIDPrefix= "actor{0}";
+        string skillUIDPrefix= "skill{0}";
+        int actorUIDCounter= 1;
+        int skillUIDCounter = 1;
         foreach (var actorData in actorList)
         {
-            List<SkillLogicDataBase> skillLogicDataList = new List<SkillLogicDataBase>();
+            List<SkillLogicDataBase> skillList = new List<SkillLogicDataBase>();
             foreach (var acotrSkillID in actorData.Skills)
             {
-                ActorSkillData actorSkillData = ConfigCtrller.Instance.Skill.GetActorSkillDataWithID(acotrSkillID);
+                ActorSkillData actorSkillData = ConfigCtrller.Instance.Skill.GetActorSkillDataByID(acotrSkillID);
                 List<SkillDataBase> skillDataBaseList = new List<SkillDataBase>();
                 foreach (var skillID in actorSkillData.SkillIDs)
                 {
-                    SkillDataBase skillDataBase = ConfigCtrller.Instance.Skill.GetSkillDataBaseWithID(skillID);
+                    SkillDataBase skillDataBase = ConfigCtrller.Instance.Skill.GetSkillDataBaseByID(skillID);
                     skillDataBaseList.Add(skillDataBase);
                 }
-                SkillLogicDataBase skillLogicDataBase = null;
+                SkillLogicDataBase skillLogicData = null;
+                string skillUID = string.Format(skillUIDPrefix, skillUIDCounter);
                 switch (actorSkillData.SkillType)
                 {
                     case SkillType.Normal:
                         break;
+                    case SkillType.First:
                     case SkillType.Active:
-                        skillLogicDataBase = new actorskilllog("skill" + skillUID, actorSkillData, skillDataBaseList);
-                        
+                        skillLogicData = new ActiveSkillLogicData(skillUID, actorSkillData, skillDataBaseList);
                         break;
                     case SkillType.Passive:
+                        skillLogicData = new PassiveSkillLogicData(skillUID, actorSkillData, skillDataBaseList);
                         break;
                     case SkillType.Trigger:
+                        skillLogicData = new TriggerSkillLogicData(skillUID, actorSkillData, skillDataBaseList);
                         break;
                     case SkillType.Weather:
-                        break;
-                    case SkillType.First:
+                        skillLogicData = new WeatherSkillLogicData(skillUID, actorSkillData, skillDataBaseList);
                         break;
                     default:
                         break;
                 }
-                skillUID++;
-
+                skillUIDCounter++;
+                if (skillLogicData != null)
+                {
+                    skillList.Add(skillLogicData);
+                }
             }
-            ActorLogicData actorLogicData = new ActorLogicData("actor" + actorUID++, actorData, skillLogicDataList);
+            string actorUID = string.Format(actorUIDPrefix,actorUIDCounter++);
+            ActorLogicData actorLogicData = new ActorLogicData(actorUID, actorData, skillList);
+            this.m_ActorLogicDataDic.Add(actorUID,actorLogicData);
         }
-
         this.InitBattleArray();
     }
-
 
     #region private methods
 
     private void InitBattleArray()
     {
-        Dictionary<byte, long> battleArray = new Dictionary<byte, long>();
-        battleArray.Add(1, 10000);
-        battleArray.Add(2, 10001);
-        battleArray.Add(3, 10002);
-        battleArray.Add(6, 10003);
-        battleArray.Add(7, 10004);
-        battleArray.Add(8, 10005);
+        Dictionary<byte, string > battleArray = new Dictionary<byte, string>();
+        battleArray.Add(1, "actor1");
+        battleArray.Add(2, "actor2");
+        battleArray.Add(3, "actor3");
+        battleArray.Add(6, "actor4");
+        battleArray.Add(7, "actor5");
+        battleArray.Add(8, "actor6");
         this.SetBattleArray(battleArray);
     }
 
@@ -75,19 +82,19 @@ public sealed class ActorModule
 
     #region public methods
 
-    public Dictionary<byte,long> GetBattleArray()
+    public Dictionary<byte,string> GetBattleArray()
     {
         return this.m_PlayerBattleArrayDic;
     }
 
-    public void SetBattleArray(Dictionary< byte,long> battleArray)
+    public void SetBattleArray(Dictionary< byte,string> battleArray)
     {
         this.m_PlayerBattleArrayDic = battleArray;
     }
 
-    public ActorLogicData GetActorLogicDataByUID(long uid)
+    public ActorLogicData GetActorLogicDataByUID(string uid)
     {
-        return this.m_ActorLogicDic.ContainsKey(uid) ? this.m_ActorLogicDic[uid] : null;
+        return this.m_ActorLogicDataDic.ContainsKey(uid) ? this.m_ActorLogicDataDic[uid] : null;
     }
     /*
     太尉我要向你道歉
@@ -97,11 +104,6 @@ public sealed class ActorModule
     现在才有时间组织这些话跟你道歉。你如果还在的话明天晚上请你吃饭，如果不在的话下次一定请你吃。对不起哈！
         蒋林旭 2015.11.24 01:02 
         */
-
-    public ActorData GetActorDataByID(int id)
-    {
-        return this.m_ActorConfigDic.ContainsKey(id) ? this.m_ActorConfigDic[id] : null;
-    }
 
     #endregion
 }

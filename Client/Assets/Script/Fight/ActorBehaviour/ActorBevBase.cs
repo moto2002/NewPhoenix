@@ -14,8 +14,14 @@ public class ActorBevBase : MonoBehaviour
     public bool IsDead { get; private set; }
     public GridData GridData { get; private set; }
 
+    #region event
+
+    public event Action<WeatherType> ShowWeatherEvent;
+
+    #endregion
+
     private bool m_IsMoves;//是否出招
-    private float m_iTweenMoveTime =0.2f;
+    private float m_iTweenMoveTime = 0.2f;
     private Vector3 m_DefaultPosition;
     private SkillBase m_NormalAttack;
     private SkillBase m_CurSkill;
@@ -30,12 +36,12 @@ public class ActorBevBase : MonoBehaviour
         this.MyTransform = this.transform;
         this.MyGameObject = this.gameObject;
         this.SetActorType();
-       
+
     }
 
     void Start()
     {
-       
+
     }
 
     #endregion
@@ -69,27 +75,59 @@ public class ActorBevBase : MonoBehaviour
         this.ActorAI = this.MyGameObject.AddComponent<ActorAIBase>();
         this.ActorAI.InitStateMachine(this);
 
-        if (this.HasWeatherSkill)
+        foreach (var item0 in data.SkillList)
         {
-            this.m_WeatherSkill = this.AddComponent<WeatherSkill>();
-            this.m_WeatherSkill.Init(this, data.GetWeatherSkill());
-        }
+            SkillBase skill0 = null;
+            switch (item0.SkillType)
+            {
+                case SkillType.Weather:
+                    skill0 = this.AddComponent<WeatherSkill>();
+                    this.m_WeatherSkill = skill0;
+                    break;
+                case SkillType.First:
+                    skill0 = this.AddComponent<FirstSkill>();
+                    this.m_FirstSkill = skill0;
+                    break;
+                default:
+                    foreach (var item1 in item0.SkillList)
+                    {
+                        SkillBase skill1 = null;
+                        switch (item1.SkillType)
+                        {
+                            case SkillType.Active:
+                                skill1 = this.AddComponent<ActiveSkill>();
+                                break;
+                            case SkillType.Passive:
+                                skill1 = this.AddComponent<PassiveSkill>();
+                                break;
+                            case SkillType.Trigger:
+                                skill1 = this.AddComponent<TriggerSkill>();
+                                break;
+                            case SkillType.Buff:
+                                skill1 = this.AddComponent<Buff>();
+                                break;
+                            case SkillType.Debuff:
+                                skill1 = this.AddComponent<Debuff>();
+                                break;
+                            default: continue;
+                        }
+                        skill1.Init(this, item1);
+                        this.m_SkillList.Add(skill1);
 
-        if (this.HasFirstSkill)
-        {
-            this.m_FirstSkill = this.AddComponent<FirstSkill>();
-            this.m_FirstSkill.Init(this, data.GetFirstSkill());
+                    }
+                    break;
+            }
+            skill0.Init(this, item0);
         }
-
         this.m_NormalAttack = this.AddComponent<NormalAttack>();
-        this.m_NormalAttack.Init(this,data.GetNormalAttack());
+        this.m_NormalAttack.Init(this, data.GetNormalAttack());
     }
 
     /// <summary>
     /// 初始化
     /// </summary>
     /// <param name="data"></param>
-    public void InitPlayer(long uid,GridData gridData)
+    public void InitPlayer(string uid, GridData gridData)
     {
         this.Init(LogicCtrller.Instance.Actor.GetActorLogicDataByUID(uid));
         this.GridData = gridData;
@@ -99,11 +137,46 @@ public class ActorBevBase : MonoBehaviour
     /// 初始化
     /// </summary>
     /// <param name="data"></param>
-    public void InitEnemy(int id,GridData gridData)
+    public void InitEnemy(int id, GridData gridData)
     {
-        ActorData actorData = LogicCtrller.Instance.Actor.GetActorDataByID(id);
+        ActorData actorData = ConfigCtrller.Instance.Actor.GetActorDataByID(id);
         List<SkillLogicDataBase> skillList = new List<SkillLogicDataBase>();
-        ActorLogicData actorLogicData = new ActorLogicData(0, actorData,skillList);
+        foreach (var acotrSkillID in actorData.Skills)
+        {
+            ActorSkillData actorSkillData = ConfigCtrller.Instance.Skill.GetActorSkillDataByID(acotrSkillID);
+            List<SkillDataBase> skillDataBaseList = new List<SkillDataBase>();
+            foreach (var skillID in actorSkillData.SkillIDs)
+            {
+                SkillDataBase skillDataBase = ConfigCtrller.Instance.Skill.GetSkillDataBaseByID(skillID);
+                skillDataBaseList.Add(skillDataBase);
+            }
+            SkillLogicDataBase skillLogicData = null;
+            switch (actorSkillData.SkillType)
+            {
+                case SkillType.Normal:
+                    break;
+                case SkillType.First:
+                case SkillType.Active:
+                    skillLogicData = new ActiveSkillLogicData(actorSkillData, skillDataBaseList);
+                    break;
+                case SkillType.Passive:
+                    skillLogicData = new PassiveSkillLogicData(actorSkillData, skillDataBaseList);
+                    break;
+                case SkillType.Trigger:
+                    skillLogicData = new TriggerSkillLogicData(actorSkillData, skillDataBaseList);
+                    break;
+                case SkillType.Weather:
+                    skillLogicData = new WeatherSkillLogicData(actorSkillData, skillDataBaseList);
+                    break;
+                default:
+                    break;
+            }
+            if (skillLogicData != null)
+            {
+                skillList.Add(skillLogicData);
+            }
+        }
+        ActorLogicData actorLogicData = new ActorLogicData(actorData, skillList);
         this.Init(actorLogicData);
     }
 
@@ -119,21 +192,21 @@ public class ActorBevBase : MonoBehaviour
     /// <summary>
     /// 出招
     /// </summary>
-    public void Moves(ActorBevBase target,Vector3 movesPosition)
+    public void Moves(ActorBevBase target, Vector3 movesPosition)
     {
         Debug.Log("准备出招");
         this.m_IsMoves = true;
         //这里需要做其他计算,得出是普通攻击还是技能或者其他什么什么的。。。
-        this.MoveToTarget(movesPosition,true);
+        this.MoveToTarget(movesPosition, true);
     }
 
-    private void MoveToTarget(Vector3 position,bool goTo)
+    private void MoveToTarget(Vector3 position, bool goTo)
     {
-        iTween.MoveTo(this.MyGameObject, iTween.Hash(iT.MoveTo.time, this.m_iTweenMoveTime, 
-            iT.MoveTo.position, position,          iT.MoveTo.islocal, false,
+        iTween.MoveTo(this.MyGameObject, iTween.Hash(iT.MoveTo.time, this.m_iTweenMoveTime,
+            iT.MoveTo.position, position, iT.MoveTo.islocal, false,
             "ignoretimescale", false, iT.MoveTo.easetype, iTween.EaseType.linear,
-          iT.MoveTo.oncomplete, "MoveComplete", 
-          iT.MoveAdd.oncompleteparams,goTo,
+          iT.MoveTo.oncomplete, "MoveComplete",
+          iT.MoveAdd.oncompleteparams, goTo,
           iT.MoveTo.oncompletetarget, this.MyGameObject));
     }
 
@@ -141,7 +214,7 @@ public class ActorBevBase : MonoBehaviour
     {
         if (goTo)
         {
-            Debug.Log("移动完成 攻击" );
+            Debug.Log("移动完成 攻击");
             this.ActorAI.Moves();
         }
         else
@@ -173,7 +246,7 @@ public class ActorBevBase : MonoBehaviour
     {
         Debug.Log("攻击完成 移动回来");
         this.ActorAI.AttackComplete();
-        this.MoveToTarget(this.m_DefaultPosition,false);
+        this.MoveToTarget(this.m_DefaultPosition, false);
     }
 
     /// <summary>
@@ -259,7 +332,7 @@ public class ActorBevBase : MonoBehaviour
     {
         get
         {
-            return this.ActorLogicData.HasWeatherSkill;
+            return this.m_WeatherSkill != null;
         }
     }
 
@@ -278,7 +351,21 @@ public class ActorBevBase : MonoBehaviour
 
     public void CastWeatherSkill()
     {
-        this.m_WeatherSkill.Moves();
+        if (this.HasWeatherSkill)
+        {
+            this.m_WeatherSkill.Moves();
+        }
+    }
+    public void ShowWeather(WeatherType type)
+    {
+        if (this.HasWeatherSkill )
+        {
+            Debug.Log(this.ActorLogicData.Name + ": " + type.ToString());
+            if (this.ShowWeatherEvent != null)
+            {
+                this.ShowWeatherEvent(type);
+            }
+        }
     }
 
     #endregion;
@@ -287,15 +374,23 @@ public class ActorBevBase : MonoBehaviour
 
     public bool HasFirstSkill
     {
-        get { return this.ActorLogicData.HasFirstSkill; }
+        get
+        {
+            return this.m_FirstSkill!=null;
+        }
     }
 
     public void CastFirstSkill()
     {
-        this.m_FirstSkill.Moves();
+        if (this.HasFirstSkill)
+        {
+            this.m_FirstSkill.Moves();
+        }
     }
 
     #endregion
+
+   
 
 
 }

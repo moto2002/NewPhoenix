@@ -1,5 +1,9 @@
 ﻿public class ActiveSkillData : SkillDataBase
 {
+    public ActiveSkillData()
+    {
+        this.SkillType = SkillType.Active;
+    }
     public SelectionTargetType SelectionTarget;//选择目标的方式
     public AttributeType? SelectionTargetRefrenceAttribute;//选择目标参考属性
     public SkillRangeType SkillRange;//技能范围

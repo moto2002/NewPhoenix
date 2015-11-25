@@ -15,6 +15,10 @@ public abstract class SkillBase : MonoBehaviour
     /// </summary>
     public abstract void Moves();
 
+    public virtual void Init(ActorBevBase actor, SkillDataBase data)
+    {
+        this.Actor = actor;
+    }
     public virtual void Init(ActorBevBase actor, SkillLogicDataBase data)
     {
         this.Actor = actor;

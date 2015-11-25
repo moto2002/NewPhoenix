@@ -32,4 +32,7 @@ public enum SkillType : byte
     /// 先机技能
     /// </summary>
     First = 5,
+
+    Buff = 6,
+    Debuff = 7,
 }

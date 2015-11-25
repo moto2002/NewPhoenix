@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class DeBuff : SkillBase
+public class Debuff : SkillBase
 {
     #region override methods
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class FirstSkill : SkillBase
+public class FirstSkill : ActiveSkill
 {
     #region override methods
 

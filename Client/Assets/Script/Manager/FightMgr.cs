@@ -62,7 +62,7 @@ public class FightMgr : MonoBehaviour
     /// <returns></returns>
     private T InstantiateActor<T>(byte index, int id) where T : ActorBevBase
     {
-        ActorData actorData = LogicCtrller.Instance.Actor.GetActorDataByID(id);
+        ActorData actorData = ConfigCtrller.Instance.Actor.GetActorDataByID(id);
         GameObject actor = PoolMgr.Instance.GetModel(AssetPathConst.Actor + actorData.Model);
         TransUtils.ChangeLayer(actor.transform, LayerConst.Actor);
         T bev = actor.AddComponent<T>();
@@ -138,10 +138,10 @@ public class FightMgr : MonoBehaviour
     private IEnumerator InitPlayer()
     {
         this.PlayerList = new List<ActorBevBase>();
-        foreach (KeyValuePair<byte, long> kv in LogicCtrller.Instance.Actor.GetBattleArray())
+        foreach (KeyValuePair<byte, string> kv in LogicCtrller.Instance.Actor.GetBattleArray())
         {
             byte index = kv.Key;
-            long uid = kv.Value;
+            string uid = kv.Value;
             GridData gridData = this.m_GridComp.ConvertIndexToGridData(index);
             PlayerBev playerBev = this.InstantiateActor<PlayerBev>(index, LogicCtrller.Instance.Actor.GetActorLogicDataByUID(uid).ID);
             playerBev.transform.SetParent(this.PlayerParent);
@@ -162,7 +162,7 @@ public class FightMgr : MonoBehaviour
     private IEnumerator InitEnemy()
     {
         this.EnemyList = new List<ActorBevBase>();
-        LevelLogicData levelLogicData = LogicCtrller.Instance.Level.GetLevelLogicDataByID(1000);
+        LevelLogicData levelLogicData = LogicCtrller.Instance.Level.GetCurLevelLogicData();
         foreach (KeyValuePair<byte, int> kv in levelLogicData.BattleArray)
         {
             byte index = kv.Key;
@@ -213,6 +213,10 @@ public class FightMgr : MonoBehaviour
         }
         else
         {
+            foreach (var item in weatherCasters)
+            {
+                item.CastWeatherSkill();
+            }
             ActorBevBase caster = null;
             if (weatherCasters.Count == 1)
             {
@@ -223,7 +227,7 @@ public class FightMgr : MonoBehaviour
             {
                 float maxAttackSpeed = weatherCasters.Max(a => a.ActorLogicData.GetAttackSpeed());
                 List<ActorBevBase> maxSpeedActors = weatherCasters.Where(a => a.ActorLogicData.GetAttackSpeed() == maxAttackSpeed).ToList();
-                if (maxAttackSpeed == 1)
+                if (maxSpeedActors.Count == 1)
                 {
                     caster = maxSpeedActors[0];
                 }
@@ -245,7 +249,7 @@ public class FightMgr : MonoBehaviour
         WeatherType? weather = caster.GetWeatherFromWeatherSkill;
         if (weather.HasValue)
         {
-            caster.CastWeatherSkill();
+            Debug.Log("天气胜利者：" + caster.name);
             this.m_WeatherCaster = caster;
             this.SetWeather(weather.Value);
         }
@@ -317,11 +321,11 @@ public class FightMgr : MonoBehaviour
     {
         if (this.SearchMovesActor(this.m_FirstSkillActorList))
         {
-            this.FirstSkillEnd();
+            this.FirstSkillMoves();
         }
         else
         {
-            this.FirstSkillMoves();
+            this.FirstSkillEnd();
         }
     }
 
