@@ -23,6 +23,7 @@ public sealed class ConfigCtrller
     private static ConfigCtrller m_Instance;
     public ActorConfig Actor { get; private set; }
     public SkillConfig Skill { get; private set; }
+    public LevelConfig Level { get; private set; }
     //private DataSet m_DataSet;
 
     private MySqlConnection m_Connection;
@@ -44,6 +45,7 @@ public sealed class ConfigCtrller
             passiveSkillTable: dataSet.Tables["config_passiveskill"],
             triggerSkillTable: dataSet.Tables["config_triggerskill"],
             buffTable: dataSet.Tables["config_buff"]);
+        this.Level = new LevelConfig(dataSet.Tables["config_stage"],dataSet.Tables["config_level"]);
     }
 
     private DataSet GetDataSet()

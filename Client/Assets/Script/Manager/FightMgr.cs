@@ -216,6 +216,7 @@ public class FightMgr : MonoBehaviour
             foreach (var item in weatherCasters)
             {
                 item.CastWeatherSkill();
+                item.RemoveWeatherSkill();
             }
             ActorBevBase caster = null;
             if (weatherCasters.Count == 1)
@@ -387,7 +388,7 @@ public class FightMgr : MonoBehaviour
         }
         else
         {
-            
+
             //重置参数
             this.ResetActorMovesState();
             //进入下一回合
@@ -402,7 +403,7 @@ public class FightMgr : MonoBehaviour
     private bool SearchMovesActor(List<ActorBevBase> actorList)
     {
         this.m_CurMovesActor = this.GetMovesActor(actorList);
-        return this.m_CurMovesActor !=null;
+        return this.m_CurMovesActor != null;
     }
 
     private void ActorMoves()
@@ -484,7 +485,7 @@ public class FightMgr : MonoBehaviour
 
     public byte CalculateMagnitudeDistance(GridData data1, GridData data2, bool isTwoCamp)
     {
-        return this.m_GridComp.CalculateMagnitudeDistance(data1, data2,isTwoCamp);
+        return this.m_GridComp.CalculateMagnitudeDistance(data1, data2, isTwoCamp);
     }
 
     #endregion
@@ -493,8 +494,8 @@ public class FightMgr : MonoBehaviour
     {
         switch (actorType)
         {
-            case ActorType.Enemy:return this.PlayerList;
-            case ActorType.Player:return this.EnemyList;
+            case ActorType.Enemy: return this.PlayerList;
+            case ActorType.Player: return this.EnemyList;
         }
         return null;
     }
@@ -509,4 +510,68 @@ public class FightMgr : MonoBehaviour
         return null;
 
     }
+
+    #region Find
+
+    public ActorBevBase FindNear(ActorBevBase source, ActorType? effectTarget)
+    {
+        ActorBevBase target = null;
+        GridData sourceGrid = source.GridData;
+        float minDistance = float.MaxValue;
+        bool isTwoCamp = effectTarget.HasValue?effectTarget.Value == ActorType.Enemy:false;
+        List<ActorBevBase> targetList0 = null;
+        List<ActorBevBase> targetList1 = null;
+        switch (source.Type)
+        {
+            case ActorType.Enemy:
+                if (isTwoCamp)
+                {
+                    targetList0 = this.PlayerList;
+                }
+                else
+                {
+                    targetList0 = this.EnemyList;
+                }
+                break;
+            case ActorType.Player:
+                if (isTwoCamp)
+                {
+                    targetList0 = this.EnemyList;
+                }
+                else
+                {
+                    targetList0 = this.PlayerList;
+                }
+                break;
+        }
+        target = this.FindNear(sourceGrid,targetList0, isTwoCamp, ref minDistance);
+        if (!effectTarget.HasValue)
+        {
+            ActorBevBase target0 = this.FindNear(sourceGrid, targetList1, !isTwoCamp, ref minDistance);
+            if (target0 != null)
+            {
+                target = target0;
+            }
+        }
+        return target;
+    }
+
+    private ActorBevBase FindNear(GridData sourceGrid, List<ActorBevBase> targetList, bool isTwoCamp,ref float minDistance)
+    {
+        ActorBevBase target = null;
+        foreach (ActorBevBase actor in targetList)
+        {
+            float distance = this.m_GridComp.CalculateMagnitudeDistance(sourceGrid, actor.GridData, isTwoCamp);
+            if (distance < minDistance
+                || (distance == minDistance &&actor.Index<target.Index ))
+            {
+                target = actor;
+                minDistance = distance;
+            }
+        }
+        return target;
+    }
+
+
+    #endregion
 }

@@ -77,47 +77,44 @@ public class ActorBevBase : MonoBehaviour
 
         foreach (var item0 in data.SkillList)
         {
-            SkillBase skill0 = null;
-            switch (item0.SkillType)
+            foreach (var item1 in item0.SkillList)
             {
-                case SkillType.Weather:
-                    skill0 = this.AddComponent<WeatherSkill>();
-                    this.m_WeatherSkill = skill0;
-                    break;
-                case SkillType.First:
-                    skill0 = this.AddComponent<FirstSkill>();
-                    this.m_FirstSkill = skill0;
-                    break;
-                default:
-                    foreach (var item1 in item0.SkillList)
-                    {
-                        SkillBase skill1 = null;
-                        switch (item1.SkillType)
-                        {
-                            case SkillType.Active:
-                                skill1 = this.AddComponent<ActiveSkill>();
-                                break;
-                            case SkillType.Passive:
-                                skill1 = this.AddComponent<PassiveSkill>();
-                                break;
-                            case SkillType.Trigger:
-                                skill1 = this.AddComponent<TriggerSkill>();
-                                break;
-                            case SkillType.Buff:
-                                skill1 = this.AddComponent<Buff>();
-                                break;
-                            case SkillType.Debuff:
-                                skill1 = this.AddComponent<Debuff>();
-                                break;
-                            default: continue;
-                        }
-                        skill1.Init(this, item1);
-                        this.m_SkillList.Add(skill1);
-
-                    }
-                    break;
+                SkillBase skill = null;
+                switch (item1.SkillType)
+                {
+                    case SkillType.Active:
+                        skill = this.AddComponent<ActiveSkill>();
+                        break;
+                    case SkillType.Passive:
+                        skill = this.AddComponent<PassiveSkill>();
+                        break;
+                    case SkillType.Trigger:
+                        skill = this.AddComponent<TriggerSkill>();
+                        break;
+                    case SkillType.Buff:
+                        skill = this.AddComponent<Buff>();
+                        break;
+                    case SkillType.Debuff:
+                        skill = this.AddComponent<Debuff>();
+                        break;
+                    case SkillType.Weather:
+                        skill = this.AddComponent<WeatherSkill>();
+                        this.m_WeatherSkill = skill;
+                        break;
+                    case SkillType.First:
+                        skill = this.AddComponent<ActiveSkill>();
+                        this.m_FirstSkill = skill;
+                        break;
+                    default: continue;
+                }
+                skill.Init(this, item0, item1);
+                if (!(item1.SkillType == SkillType.Weather
+                    || item1.SkillType == SkillType.First
+                    || item1.SkillType == SkillType.Normal))
+                {
+                    this.m_SkillList.Add(skill);
+                }
             }
-            skill0.Init(this, item0);
         }
         this.m_NormalAttack = this.AddComponent<NormalAttack>();
         this.m_NormalAttack.Init(this, data.GetNormalAttack());
@@ -368,6 +365,16 @@ public class ActorBevBase : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 移除天气技能
+    /// </summary>
+    public void RemoveWeatherSkill()
+    {
+        if (this.m_WeatherSkill != null)
+        {
+            Destroy(this.m_WeatherSkill);
+        }
+    }
     #endregion;
 
     #region FirstSkill
@@ -388,6 +395,16 @@ public class ActorBevBase : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 移除先机技能
+    /// </summary>
+    public void RemoveFirstSkill()
+    {
+        if (this.m_FirstSkill != null)
+        {
+            Destroy(this.m_FirstSkill);
+        }
+    }
     #endregion
 
    
