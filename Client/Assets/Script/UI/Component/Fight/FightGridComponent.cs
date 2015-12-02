@@ -1,13 +1,48 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// X轴 表示长
+/// z轴 表示宽
+/// </summary>
 public class FightGridComponent : ComponentBase
 {
-    public float GridXLength;    //单元格子宽
-    public float GridZLength;    //单元格子长
+    /// <summary>
+    /// 单元格子长
+    /// </summary>
+    public float GridXLength;
+
+    /// <summary>
+    /// 单元格子宽
+    /// </summary>
+    public float GridZLength;
+
+    /// <summary>
+    /// 长 格子数量
+    /// </summary>
     public byte XGridCount;
+
+    /// <summary>
+    /// 敌方 宽 格子数量
+    /// </summary>
     public byte EnemyZGridCount;
+
+    /// <summary>
+    /// 己方 宽 格子数量
+    /// </summary>
     public byte PlayerZGridCount;
+
+    /// <summary>
+    /// 间隔 宽 
+    /// </summary>
     public float BorderZLength;
+
+    /// <summary>
+    /// 暂时设定两个阵营一样宽，所以用一个变量来表示
+    /// </summary>
+    public byte ZGridCouunt
+    {
+        get { return this.PlayerZGridCount; }
+    }
     public GridData[,] EnemyGrids { get; private set; }
     public GridData[,] PlayerGrids { get; private set; }
     public bool DrawGrid;
@@ -167,11 +202,11 @@ public class FightGridComponent : ComponentBase
     /// </summary>
     /// <param name="grid1"></param>
     /// <param name="grid2"></param>
-    /// <param name="isTwoCamp"表示是否为两个阵营的格子></param>
+    /// <param name="isOtherCamp"表示是否为两个阵营的格子></param>
     /// <returns></returns>
-    public byte CalculateMagnitudeDistance(GridData grid1, GridData grid2, bool isTwoCamp)
+    public byte CalculateMagnitudeDistance(GridData grid1, GridData grid2, bool isOtherCamp)
     {
-        if (isTwoCamp)
+        if (isOtherCamp)
         {
             return (byte)(Mathf.Pow(grid1.XGrid - grid2.XGrid, 2) + Mathf.Pow(grid1.ZGrid + grid2.ZGrid + 1, 2));
         }
