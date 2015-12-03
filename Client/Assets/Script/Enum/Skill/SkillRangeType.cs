@@ -13,10 +13,5 @@
     /// 填表格式 2,3
     /// </summary>
     Rect = 1,
-
-    /// <summary>
-    /// 离散的点
-    /// </summary>
-    Point = 2,
   
 }
