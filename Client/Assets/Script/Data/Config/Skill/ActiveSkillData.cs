@@ -36,6 +36,33 @@
     public bool? RestoreHPeSource;
 
     /// <summary>
+    /// 是否包含空格子
+    /// </summary>
+    public bool IncludeEmpty;
+
+    /// <summary>
+    /// 选取的数量
+    /// </summary>
+    public byte SelectionCount;
+
+    /// <summary>
+    /// 播放动画的次数
+    /// </summary>
+    public byte AnimationTimes;
+
+    /// <summary>
+    /// 移动到目标
+    /// </summary>
+    public MoveToTargetType MoveToTarget;
+
+    /// <summary>
+    /// 移动到目标的锚点
+    /// </summary>
+    public MoveToPivotType? MoveToPivot;
+
+
+
+    /// <summary>
     /// 获取矩形范围的宽度
     /// </summary>
     /// <returns></returns>
@@ -110,16 +137,4 @@
         return 0;
     }
 
-    /// <summary>
-    /// 随机点
-    /// </summary>
-    /// <returns></returns>
-    public byte GetRandomCount()
-    {
-        if (this.SkillRange == SkillRangeType.Point)
-        {
-            return this.RangeValue[0];
-        }
-        return 0;
-    }
 }

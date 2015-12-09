@@ -5,7 +5,7 @@ public abstract class SkillDataBase
     public string Name;//名称
     public string Description;//描述
     public string Icon;//图标
-    public ActorType? EffectTarget;//作用于哪方
+    public EffectTargetType EffectTarget;//作用于哪方
 
     //作用值，即效果
     public AttributeType? ChangeAttribute;//改变属性

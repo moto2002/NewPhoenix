@@ -63,10 +63,6 @@ public class ActiveSkill : SkillBase
             case SelectionTargetType.Opposite:
                 //2015.12.03 02:57-log:写到这里
                 break;
-            case SelectionTargetType.FromBack:
-                break;
-            case SelectionTargetType.FromForward:
-                break;
             case SelectionTargetType.Random:
                 break;
             case SelectionTargetType.Attribute:
