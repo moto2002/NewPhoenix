@@ -88,4 +88,9 @@ public static class MathUtils
         return rect.AdjustScreen();
     }
 
+    public static byte CalculateDistanceMagnitude(this GridData from, GridData to)
+    {
+        if (from == null || to == null) return byte.MinValue;
+        return (byte)(Mathf.Pow(from.ZGrid - to.ZGrid, 2) + Mathf.Pow(from.XGrid - to.XGrid, 2));
+    }
 }

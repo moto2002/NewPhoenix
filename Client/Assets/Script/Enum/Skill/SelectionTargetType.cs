@@ -46,8 +46,8 @@ public enum SelectionTargetType : byte
     Random = 6,
 
     /// <summary>
-    /// 根据某项属性筛选
+    /// 根据某项字段筛选
     /// 例如：国籍，职业等
     /// </summary>
-    Attribute = 7,
+    Field = 7,
 }

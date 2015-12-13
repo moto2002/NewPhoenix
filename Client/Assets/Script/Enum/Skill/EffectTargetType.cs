@@ -6,7 +6,7 @@ public enum EffectTargetType : byte
     /// <summary>
     /// 敌方
     /// </summary>
-    Enemy = 0,
+    Rival = 0,
 
     /// <summary>
     /// 友方

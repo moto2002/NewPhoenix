@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
 
 public class ActiveSkill : SkillBase
@@ -22,55 +22,43 @@ public class ActiveSkill : SkillBase
 
     protected override List<ActorBevBase> FindTarget()
     {
-        //2015.12.01-log:需要明确十字形范围 是属于那种选择类型
-        List<ActorBevBase> targetList = new List<ActorBevBase>();
-        switch (this.m_ActiveSkillData.SelectionTarget)
+        if (this.m_ActiveSkillData.EffectTarget == EffectTargetType.Self)
         {
-            case SelectionTargetType.Near:
-                ActorBevBase nearTarget = FightMgr.Instance.FindNear(this.Actor, this.m_ActiveSkillData.EffectTarget);
-                if (nearTarget != null)
-                {
-                    targetList.Add(nearTarget);
-                }
-                break;
-            case SelectionTargetType.Far:
-                ActorBevBase farTarget = FightMgr.Instance.FindFar(this.Actor, this.m_ActiveSkillData.EffectTarget);
-                if (farTarget != null)
-                {
-                    targetList.Add(farTarget);
-                }
-                break;
-            case SelectionTargetType.MinAttribute:
-                ActorBevBase minAttributeTarget = FightMgr.Instance.FindMinAttribute(this.Actor, this.m_ActiveSkillData.EffectTarget, this.m_ActiveSkillData.SelectionTargetRefrenceAttribute.Value);
-                if (minAttributeTarget != null)
-                {
-                    targetList.Add(minAttributeTarget);
-                }
-                break;
-            case SelectionTargetType.MaxAttribute:
-                ActorBevBase maxAttributeTarget = FightMgr.Instance.FindMaxAttribute(this.Actor, this.m_ActiveSkillData.EffectTarget, this.m_ActiveSkillData.SelectionTargetRefrenceAttribute.Value);
-                if (maxAttributeTarget != null)
-                {
-                    targetList.Add(maxAttributeTarget);
-                }
-                break;
-            case SelectionTargetType.Max:
-                byte width = this.m_ActiveSkillData.GetRectWidth();
-                byte height = this.m_ActiveSkillData.GetRectHeight();
-                if (width == 0 || height == 0)return null;
-                targetList = FightMgr.Instance.FindMaxCount(this.Actor, this.m_ActiveSkillData.EffectTarget,width,height );
-                break;
-            case SelectionTargetType.Opposite:
-                //2015.12.03 02:57-log:写到这里
-                break;
-            case SelectionTargetType.Random:
-                break;
-            case SelectionTargetType.Attribute:
-                break;
-            default:
-                break;
+            return new List<ActorBevBase>() { this.Actor };
         }
-        return targetList;
+        else
+        {
+            List<ActorBevBase> selectionTargetList = new List<ActorBevBase>();
+            switch (this.m_ActiveSkillData.SelectionTarget)
+            {
+                case SelectionTargetType.Near:
+                    selectionTargetList = FightMgr.Instance.FindNear(this.Actor, this.m_ActiveSkillData.SelectionCount, this.m_ActiveSkillData.EffectTarget);
+                    break;
+                case SelectionTargetType.Far:
+                    selectionTargetList = FightMgr.Instance.FindFar(this.Actor, this.m_ActiveSkillData.SelectionCount, this.m_ActiveSkillData.EffectTarget);
+                    break;
+                case SelectionTargetType.MinAttribute:
+                    selectionTargetList = FightMgr.Instance.FindMinAttribute(this.Actor, this.m_ActiveSkillData.SelectionCount, this.m_ActiveSkillData.EffectTarget, this.m_ActiveSkillData.SelectionTargetRefrenceAttribute.Value);
+                    break;
+                case SelectionTargetType.MaxAttribute:
+                    selectionTargetList = FightMgr.Instance.FindMaxAttribute(this.Actor, this.m_ActiveSkillData.SelectionCount, this.m_ActiveSkillData.EffectTarget, this.m_ActiveSkillData.SelectionTargetRefrenceAttribute.Value);
+                    break;
+                case SelectionTargetType.Max:
+                    //2015.12.14 02:28-log:写到这里
+                    break;
+                case SelectionTargetType.Opposite:
+                    //2015.12.03 02:57-log:写到这里
+                    ActorBevBase target = FightMgr.Instance.FindOpposite(this.Actor);
+                    break;
+                case SelectionTargetType.Random:
+                    selectionTargetList = FightMgr.Instance.FindRandom(this.Actor, this.m_ActiveSkillData.SelectionCount, this.m_ActiveSkillData.EffectTarget);
+                    break;
+                case SelectionTargetType.Field:
+                    selectionTargetList = FightMgr.Instance.FindField(this.Actor, this.m_ActiveSkillData.SelectionCount, this.m_ActiveSkillData.EffectTarget, this.m_ActiveSkillData.SelectionTargetRefrenceField.Value, this.m_ActiveSkillData.SelectionTargetRefrenceFieldValue);
+                    break;
+            }
+            //2015.12.14 02:32-log:写到这里
+        }
     }
 
     #endregion

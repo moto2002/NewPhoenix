@@ -514,310 +514,387 @@ public class FightMgr : MonoBehaviour
     #region Find 先写暂时的，以后还需要根据情况改 （可以改成工厂+策略）
 
     //2015.12.03-log:需要弄清楚是否需要筛选掉已经死亡的
+    //2015.12.14-log:筛选掉已经死亡的
 
-    /// <summary>
-    /// 查找最近的单个目标
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public ActorBevBase FindNear(ActorBevBase source, ActorType? effectTarget)
+    private List<ActorBevBase> GetFindList(ActorType sourceType, EffectTargetType effectTarget)
     {
-        List<ActorBevBase> firstTargetList = null;
-        List<ActorBevBase> secondTargetList = null;
-        bool isOtherCamp;
-        this.SetFindTargetList(source.Type,effectTarget,ref firstTargetList,ref secondTargetList,out isOtherCamp);
-
-        GridData sourceGrid = source.GridData;
-        float minDistance = float.MaxValue;
-        ActorBevBase target = null;
-        if (firstTargetList != null && firstTargetList.Count > 0)
+        List<ActorBevBase> findList = null;
+        if ((sourceType == ActorType.Enemy && effectTarget == EffectTargetType.Rival)
+            || (sourceType == ActorType.Player && effectTarget == EffectTargetType.Friend))
         {
-            target = this.FindNear(sourceGrid, firstTargetList, isOtherCamp, ref minDistance);
-        }
-        if (secondTargetList!=null && secondTargetList.Count>0)
-        {
-            ActorBevBase secondTarget = this.FindNear(sourceGrid, secondTargetList, !isOtherCamp, ref minDistance);
-            if (secondTarget != null)
-            {
-                target = secondTarget;
-            }
-        }
-        return target;
-    }
-
-    private ActorBevBase FindNear(GridData sourceGrid, List<ActorBevBase> targetList, bool isOtherCamp,ref float minDistance)
-    {
-        ActorBevBase target = null;
-        foreach (ActorBevBase actor in targetList)
-        {
-            if (actor.IsDead) continue; 
-            float distance = this.m_GridComp.CalculateMagnitudeDistance(sourceGrid, actor.GridData, isOtherCamp);
-            if (distance < minDistance
-                || (distance == minDistance &&actor.Index<target.Index ))//index小 优先原则
-            {
-                target = actor;
-                minDistance = distance;
-            }
-        }
-        return target;
-    }
-
-    /// <summary>
-    /// 查找最远目标
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public ActorBevBase FindFar(ActorBevBase source, ActorType? effectTarget)
-    {
-        List<ActorBevBase> firstTargetList = null;
-        List<ActorBevBase> secondTargetList = null;
-        bool isOtherCamp;
-        this.SetFindTargetList(source.Type, effectTarget, ref firstTargetList, ref secondTargetList, out isOtherCamp);
-
-        GridData sourceGrid = source.GridData;
-        float maxDistance = 0;
-        ActorBevBase target = null;
-        if (firstTargetList != null && firstTargetList.Count > 0)
-        {
-            target = this.FindFar(sourceGrid, firstTargetList, isOtherCamp, ref maxDistance);
-        }
-        if (secondTargetList != null && secondTargetList.Count > 0)
-        {
-            ActorBevBase secondTarget = this.FindFar(sourceGrid, secondTargetList, !isOtherCamp, ref maxDistance);
-            if (secondTarget != null)
-            {
-                target = secondTarget;
-            }
-        }
-        return target;
-    }
-
-    private ActorBevBase FindFar(GridData sourceGrid, List<ActorBevBase> targetList, bool isOtherCamp, ref float maxDistance)
-    {
-        ActorBevBase target = null;
-        foreach (ActorBevBase actor in targetList)
-        {
-            if (actor.IsDead) continue;
-
-            float distance = this.m_GridComp.CalculateMagnitudeDistance(sourceGrid, actor.GridData, isOtherCamp);
-            if (distance > maxDistance
-                || (distance == maxDistance && actor.Index < target.Index))
-            {
-                target = actor;
-                maxDistance = distance;
-            }
-        }
-        return target;
-    }
-
-    /// <summary>
-    /// 查找指定属性最小的目标
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="effectTarget"></param>
-    /// <param name="attributeType"></param>
-    /// <returns></returns>
-    public ActorBevBase FindMinAttribute(ActorBevBase source, ActorType? effectTarget, AttributeType attributeType)
-    {
-        List<ActorBevBase> firstTargetList = null;
-        List<ActorBevBase> secondTargetList = null;
-        bool isOtherCamp;
-        this.SetFindTargetList(source.Type, effectTarget, ref firstTargetList, ref secondTargetList, out isOtherCamp);
-
-        GridData sourceGrid = source.GridData;
-        float minAttributeValue = 0;
-        ActorBevBase target = null;
-        if (firstTargetList != null && firstTargetList.Count > 0)
-        {
-            target = this.FindMinAttribute(sourceGrid, firstTargetList, isOtherCamp, ref minAttributeValue);
-        }
-        if (secondTargetList != null && secondTargetList.Count > 0)
-        {
-            ActorBevBase secondTarget = this.FindMinAttribute(sourceGrid, secondTargetList, !isOtherCamp, ref minAttributeValue);
-            if (secondTarget != null)
-            {
-                target = secondTarget;
-            }
-        }
-        return target;
-    }
-
-    private ActorBevBase FindMinAttribute(GridData sourceGrid, List<ActorBevBase> targetList, bool isOtherCamp, ref float minAttributeValue)
-    {
-        ActorBevBase target = null;
-        foreach (ActorBevBase actor in targetList)
-        {
-            if (actor.IsDead) continue;
-
-            float attributeValue = this.m_GridComp.CalculateMagnitudeDistance(sourceGrid, actor.GridData, isOtherCamp);
-            if (attributeValue < minAttributeValue
-                || (attributeValue == minAttributeValue && actor.Index < target.Index))
-            {
-                target = actor;
-                minAttributeValue = attributeValue;
-            }
-        }
-        return target;
-    }
-
-    /// <summary>
-    /// 查找指定属性最大的目标
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="effectTarget"></param>
-    /// <param name="attributeType"></param>
-    /// <returns></returns>
-    public ActorBevBase FindMaxAttribute(ActorBevBase source, ActorType? effectTarget, AttributeType attributeType)
-    {
-        List<ActorBevBase> firstTargetList = null;
-        List<ActorBevBase> secondTargetList = null;
-        bool isOtherCamp;
-        this.SetFindTargetList(source.Type, effectTarget, ref firstTargetList, ref secondTargetList, out isOtherCamp);
-
-        GridData sourceGrid = source.GridData;
-        float minAttributeValue = 0;
-        ActorBevBase target = null;
-        if (firstTargetList != null && firstTargetList.Count > 0)
-        {
-            target = this.FindMaxAttribute(sourceGrid, firstTargetList, isOtherCamp, ref minAttributeValue);
-        }
-        if (secondTargetList != null && secondTargetList.Count > 0)
-        {
-            ActorBevBase secondTarget = this.FindMaxAttribute(sourceGrid, secondTargetList, !isOtherCamp, ref minAttributeValue);
-            if (secondTarget != null)
-            {
-                target = secondTarget;
-            }
-        }
-        return target;
-    }
-
-    private ActorBevBase FindMaxAttribute(GridData sourceGrid, List<ActorBevBase> targetList, bool isOtherCamp, ref float maxAttributeValue)
-    {
-        ActorBevBase target = null;
-        foreach (ActorBevBase actor in targetList)
-        {
-            if (actor.IsDead) continue;
-
-            float attributeValue = this.m_GridComp.CalculateMagnitudeDistance(sourceGrid, actor.GridData, isOtherCamp);
-            if (attributeValue > maxAttributeValue
-                || (attributeValue == maxAttributeValue && actor.Index < target.Index))
-            {
-                target = actor;
-                maxAttributeValue = attributeValue;
-            }
-        }
-        return target;
-    }
-
-    public List<ActorBevBase> FindMaxCount(ActorBevBase source, ActorType? effectTarget,byte width,byte height)
-    {
-        List<ActorBevBase> firstTargetList = null;
-        List<ActorBevBase> secondTargetList = null;
-        bool isOtherCamp;
-        this.SetFindTargetList(source.Type, effectTarget, ref firstTargetList, ref secondTargetList, out isOtherCamp);
-
-        GridData sourceGrid = source.GridData;
-        byte maxCount= 0;
-        List<ActorBevBase> targetList = null;
-        if (firstTargetList != null && firstTargetList.Count > 0)
-        {
-            targetList = this.FindMaxCount(sourceGrid, firstTargetList, isOtherCamp, width,  height,ref maxCount);
-        }
-        if (secondTargetList != null && secondTargetList.Count > 0)
-        {
-            List<ActorBevBase> secondList= this.FindMaxCount(sourceGrid, secondTargetList, !isOtherCamp, width, height,ref maxCount);
-            if (secondList != null)
-            {
-                targetList = secondList;
-            }
-        }
-        return targetList;
-    }
-
-    private List<ActorBevBase> FindMaxCount(GridData sourceGrid, List<ActorBevBase> findList, bool isOtherCamp, byte width, byte height,ref byte maxCount)
-    {
-        List<ActorBevBase> targetList = new List<ActorBevBase>();
-        byte maxWidth = this.m_GridComp.XGridCount;
-        byte maxHeight = this.m_GridComp.ZGridCouunt;
-
-        for (int widthIndex = 0; widthIndex <= maxWidth - width; widthIndex++)
-        {
-            List<ActorBevBase> tmpList = new List<ActorBevBase>();
-            for (int heightIndex = 0; heightIndex <= maxHeight - height; heightIndex++)
-            {
-                foreach (var item in findList)
-                {
-                    if (item.IsDead) continue;
-                    byte quotient = (byte)(item.Index / maxWidth);//商
-                    byte remainder = (byte)(item.Index % maxWidth);//余数
-                    bool inWidth = ( widthIndex<= remainder && remainder < widthIndex + width);
-                    bool inHeight = (heightIndex<= quotient && quotient<heightIndex + height);
-                    if (inWidth && inHeight)
-                    {
-                        tmpList.Add(item);
-                    }
-                }
-            }
-            if (tmpList.Count >maxCount &&  tmpList.Count > targetList.Count)
-            {
-                targetList = tmpList;
-                maxCount =(byte)tmpList.Count;
-
-            }
-        }
-        return targetList;
-    }
-
-    private void SetFindTargetList(ActorType sourceType, ActorType? effectTarget,ref List<ActorBevBase> firstList, ref List<ActorBevBase> secondList,out bool firstListIsOtherClamp)
-    {
-        if (effectTarget.HasValue)
-        {
-            firstListIsOtherClamp = effectTarget.Value == ActorType.Enemy;
-            switch (sourceType)
-            {
-                case ActorType.Enemy:
-                    switch (effectTarget.Value)
-                    {
-                        case ActorType.Enemy:
-                            firstList = this.PlayerList;
-                            break;
-                        case ActorType.Player:
-                            firstList = this.EnemyList;
-                            break;
-                    }
-                    break;
-                case ActorType.Player:
-                    switch (effectTarget.Value)
-                    {
-                        case ActorType.Enemy:
-                            firstList = this.EnemyList;
-                            break;
-                        case ActorType.Player:
-                            firstList = this.PlayerList;
-                            break;
-                    }
-                    break;
-            }
+            findList = this.PlayerList;
         }
         else
         {
-            //当未指定查找阵营的时候，先查找己方
-            firstListIsOtherClamp = false;
-            switch (sourceType)
+            findList = this.EnemyList;
+        }
+        //筛选掉已经死亡的
+        return findList.Where(a => !a.IsDead).ToList();
+    }
+
+    /// <summary>
+    /// 查找最近的目标列表
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="count"></param>
+    /// <param name="effectTarget"></param>
+    /// <returns></returns>
+    public List<ActorBevBase> FindNear(ActorBevBase source, byte count, EffectTargetType effectTarget)
+    {
+        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        if (findList.Count <= count)
+        {
+            return findList;
+        }
+        List<ActorBevBase> targetList = new List<ActorBevBase>();
+        if (effectTarget == EffectTargetType.Rival)
+        {
+            for (int i = 0; i < count; i++)
             {
-                case ActorType.Enemy:
-                    firstList = this.EnemyList;
-                    secondList = this.PlayerList;
-                    break;
-                case ActorType.Player:
-                    firstList = this.PlayerList;
-                    secondList = this.EnemyList;
-                    break;
+                ActorBevBase target = null;
+                for (int j = 0; j < findList.Count; j++)
+                {
+                    ActorBevBase tmpTarget = findList[j];
+                    if (target == null)
+                    {
+                        target = tmpTarget;
+                    }
+                    else
+                    {
+                        if (tmpTarget.GridData.ZGrid < target.GridData.ZGrid)
+                        {
+                            target = tmpTarget;
+                        }
+                        else if (tmpTarget.GridData.ZGrid == target.GridData.ZGrid
+                            && Mathf.Abs(tmpTarget.GridData.XGrid - source.GridData.XGrid) <= Mathf.Abs(tmpTarget.GridData.XGrid - source.GridData.XGrid)
+                            && tmpTarget.GridData.XGrid < target.GridData.XGrid)
+                        {
+                            target = tmpTarget;
+                        }
+                    }
+                }
+                findList.Remove(target);
+                targetList.Add(target);
             }
         }
+        else if (effectTarget == EffectTargetType.Friend)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                ActorBevBase target = null;
+                byte minDistance = byte.MaxValue;
+                for (int j = 0; j < findList.Count; j++)
+                {
+                    ActorBevBase tmpTarget = findList[j];
+                    byte distance = (byte)(source.GridData.CalculateDistanceMagnitude(tmpTarget.GridData));
+                    if (target == null)
+                    {
+                        target = tmpTarget;
+                        minDistance = distance;
+                    }
+                    else
+                    {
+                        if (distance < minDistance)
+                        {
+                            target = tmpTarget;
+                            minDistance = distance;
+                        }
+                        else if (distance == minDistance && tmpTarget.Index < target.Index)
+                        {
+                            target = tmpTarget;
+                            minDistance = distance;
+                        }
+                    }
+                }
+                findList.Remove(target);
+                targetList.Add(target);
+            }
+        }
+        return targetList;
+    }
+
+    /// <summary>
+    /// 查找最远的目标列表
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="count"></param>
+    /// <param name="effectTarget"></param>
+    /// <returns></returns>
+    public List<ActorBevBase> FindFar(ActorBevBase source, byte count, EffectTargetType effectTarget)
+    {
+        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        if (findList.Count <= count)
+        {
+            return findList;
+        }
+        List<ActorBevBase> targetList = new List<ActorBevBase>();
+        if (effectTarget == EffectTargetType.Rival)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                ActorBevBase target = null;
+                for (int j = 0; j < findList.Count; j++)
+                {
+                    ActorBevBase tmpTarget = findList[j];
+                    if (target == null)
+                    {
+                        target = tmpTarget;
+                    }
+                    else
+                    {
+                        if (tmpTarget.GridData.ZGrid > target.GridData.ZGrid)
+                        {
+                            target = tmpTarget;
+                        }
+                        else if (tmpTarget.GridData.ZGrid == target.GridData.ZGrid
+                            && Mathf.Abs(tmpTarget.GridData.XGrid - source.GridData.XGrid) <= Mathf.Abs(tmpTarget.GridData.XGrid - source.GridData.XGrid)
+                            && tmpTarget.GridData.XGrid < target.GridData.XGrid)
+                        {
+                            target = tmpTarget;
+                        }
+                    }
+                }
+                findList.Remove(target);
+                targetList.Add(target);
+            }
+        }
+        else if (effectTarget == EffectTargetType.Friend)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                ActorBevBase target = null;
+                byte maxDistance = byte.MaxValue;
+                for (int j = 0; j < findList.Count; j++)
+                {
+                    ActorBevBase tmpTarget = findList[j];
+                    byte distance = (byte)(source.GridData.CalculateDistanceMagnitude(tmpTarget.GridData));
+                    if (target == null)
+                    {
+                        target = tmpTarget;
+                        maxDistance = distance;
+                    }
+                    else
+                    {
+                        if (distance > maxDistance)
+                        {
+                            target = tmpTarget;
+                            maxDistance = distance;
+                        }
+                        else if (distance == maxDistance && tmpTarget.Index > target.Index)
+                        {
+                            target = tmpTarget;
+                            maxDistance = distance;
+                        }
+                    }
+                }
+                findList.Remove(target);
+                targetList.Add(target);
+            }
+        }
+        return targetList;
+    }
+
+    /// <summary>
+    /// 查找属性最小的目标列表
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="count"></param>
+    /// <param name="effectTarget"></param>
+    /// <returns></returns>
+    public List<ActorBevBase> FindMinAttribute(ActorBevBase source, byte count, EffectTargetType effectTarget,AttributeType attribute)
+    {
+        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        if (findList.Count <= count)
+        {
+            return findList;
+        }
+        List<ActorBevBase> targetList = new List<ActorBevBase>();
+        for (int i = 0; i < count; i++)
+        {
+            ActorBevBase target = null;
+            for (int j = 0; j < findList.Count; j++)
+            {
+                ActorBevBase tmpTarget = findList[j];
+                if (target == null)
+                {
+                    target = tmpTarget;
+                }
+                else
+                {
+                    if (tmpTarget.ActorLogicData.GetAttrbuteValueByType(attribute) < target.ActorLogicData.GetAttrbuteValueByType(attribute))
+                    {
+                        target = tmpTarget;
+                    }
+                    else if (tmpTarget.ActorLogicData.GetAttrbuteValueByType(attribute) == target.ActorLogicData.GetAttrbuteValueByType(attribute)
+                        && tmpTarget.Index < target.Index)
+                    {
+                        target = tmpTarget;
+                    }
+                }
+            }
+            findList.Remove(target);
+            targetList.Add(target);
+        }
+        return targetList;
+    }
+
+    /// <summary>
+    /// 查找属性最大的目标列表
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="count"></param>
+    /// <param name="effectTarget"></param>
+    /// <returns></returns>
+    public List<ActorBevBase> FindMaxAttribute(ActorBevBase source, byte count, EffectTargetType effectTarget, AttributeType attribute)
+    {
+        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        if (findList.Count <= count)
+        {
+            return findList;
+        }
+        List<ActorBevBase> targetList = new List<ActorBevBase>();
+        for (int i = 0; i < count; i++)
+        {
+            ActorBevBase target = null;
+            for (int j = 0; j < findList.Count; j++)
+            {
+                ActorBevBase tmpTarget = findList[j];
+                if (target == null)
+                {
+                    target = tmpTarget;
+                }
+                else
+                {
+                    if (tmpTarget.ActorLogicData.GetAttrbuteValueByType(attribute) > target.ActorLogicData.GetAttrbuteValueByType(attribute))
+                    {
+                        target = tmpTarget;
+                    }
+                    else if (tmpTarget.ActorLogicData.GetAttrbuteValueByType(attribute) == target.ActorLogicData.GetAttrbuteValueByType(attribute)
+                        && tmpTarget.Index < target.Index)
+                    {
+                        target = tmpTarget;
+                    }
+                }
+            }
+            findList.Remove(target);
+            targetList.Add(target);
+        }
+        return targetList;
+    }
+
+
+    /// <summary>
+    /// 查找对面目标列表
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="count"></param>
+    /// <param name="effectTarget"></param>
+    /// <returns></returns>
+    public ActorBevBase FindOpposite(ActorBevBase source)
+    {
+        List<ActorBevBase> findList = this.GetFindList(source.Type, EffectTargetType.Rival);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        ActorBevBase target = null;
+        for (int j = 0; j < findList.Count; j++)
+        {
+            ActorBevBase tmpTarget = findList[j];
+            if (tmpTarget.GridData.XGrid == source.GridData.XGrid
+                && (target == null) ? true : tmpTarget.GridData.ZGrid < target.GridData.ZGrid)
+            {
+                target = tmpTarget;
+            }
+        }
+        return target;
+    }
+
+    /// <summary>
+    /// 查找随机目标列表
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="count"></param>
+    /// <param name="effectTarget"></param>
+    /// <returns></returns>
+    public List<ActorBevBase> FindRandom(ActorBevBase source, byte count, EffectTargetType effectTarget)
+    {
+        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        if (findList.Count <= count)
+        {
+            return findList;
+        }
+        List<ActorBevBase> targetList = new List<ActorBevBase>();
+        for (int i = 0; i < count; i++)
+        {
+            ActorBevBase target = findList[Random.Range(0, findList.Count)];
+            findList.Remove(target);
+            targetList.Add(target);
+        }
+        return targetList;
+    }
+
+    /// <summary>
+    /// 查找指定字段目标列表
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="count"></param>
+    /// <param name="effectTarget"></param>
+    /// <returns></returns>
+    public List<ActorBevBase> FindField(ActorBevBase source, byte count, EffectTargetType effectTarget, FieldType field, string fieldValue)
+    {
+        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        if (findList.Count <= count)
+        {
+            return findList;
+        }
+        List<ActorBevBase> targetList = new List<ActorBevBase>();
+        for (int i = 0; i < count; i++)
+        {
+            ActorBevBase target = null;
+            for (int j = 0; j < findList.Count; j++)
+            {
+                ActorBevBase tmpTarget = findList[j];
+                if (tmpTarget.ActorLogicData.GetFieldValueByType(field).Equals(fieldValue))
+                {
+                    if (target == null)
+                    {
+                        target = tmpTarget;
+                    }
+                    else if (tmpTarget.Index < target.Index)
+                    {
+                        target = tmpTarget;
+                    }
+                }
+            }
+            findList.Remove(target);
+            targetList.Add(target);
+        }
+        return targetList;
     }
 
     #endregion

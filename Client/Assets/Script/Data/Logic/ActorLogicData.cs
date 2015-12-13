@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class ActorLogicData
 {
     private ActorData m_ActorData;
     private List<SkillLogicDataBase> m_SkillList;
 
-    public ActorLogicData( ActorData actorData, List<SkillLogicDataBase> skillList)
+    public ActorLogicData(ActorData actorData, List<SkillLogicDataBase> skillList)
     {
         this.m_ActorData = actorData;
         this.m_SkillList = skillList;
@@ -85,10 +86,10 @@ public class ActorLogicData
 
     #endregion
 
-    public string  UID { get; private set; }
+    public string UID { get; private set; }
     public int ID { get { return this.m_ActorData.ID; } }
     public string Name { get { return this.m_ActorData.Name; } }//名称
-    public string Description{ get { return this.m_ActorData.Description; } }//描述
+    public string Description { get { return this.m_ActorData.Description; } }//描述
     public string Icon { get { return this.m_ActorData.Icon; } }//图标
     public string Texture { get { return this.m_ActorData.Texture; } }//原画
     public string Model { get { return this.m_ActorData.Model; } }//模型
@@ -136,4 +137,65 @@ public class ActorLogicData
     /// </summary>
     public int SpecialAttribute { get { return this.m_ActorData.SpecialAttribute; } }
     #endregion
+
+    public float GetAttrbuteValueByType(AttributeType type)
+    {
+        switch (type)
+        {
+            case AttributeType.Power: return this.Power;
+            case AttributeType.IQ: return this.IQ;
+            case AttributeType.Agile: return this.Agile;
+            case AttributeType.Physique: return this.Physique;
+            case AttributeType.HP: return this.HP;
+            case AttributeType.AP: return this.AP;
+            case AttributeType.PhysicsDEF: return this.PhysicsDEF;
+            case AttributeType.MagicDEf: return this.MagicDEf;
+            case AttributeType.Speed: return this.Speed;
+            case AttributeType.Hit: return this.Hit;
+            case AttributeType.Dodge: return this.Dodge;
+            case AttributeType.Critical: return this.Critical;
+            case AttributeType.OpposeCritical: return this.OpposeCritical;
+            case AttributeType.CriticalDamge: return this.CriticalDamge;
+            case AttributeType.CriticalDamgeCounteract: return this.CriticalDamgeCounteract;
+            case AttributeType.Heal: return this.Heal;
+            case AttributeType.BeHealed: return this.BeHealed;
+            case AttributeType.Block: return this.Block;
+            case AttributeType.Broken: return this.Broken;
+            case AttributeType.SpecialAttribute: return this.SpecialAttribute;
+        }
+        Debug.LogError("AttributeType:" + type + "类型错误");
+        return float.MinValue;
+    }
+
+    public string GetFieldValueByType(FieldType type)
+    {
+        switch (type)
+        {
+            case FieldType.ID: return this.ID.ToString();
+            case FieldType.Name: return this.Name;
+            case FieldType.Profession:
+                if (this.Profession.HasValue)
+                {
+                    return this.Profession.Value.ToString();
+                }
+                break;
+            case FieldType.Nationality:
+                if (this.Nationality.HasValue)
+                {
+                    return this.Nationality.Value.ToString();
+                }
+                break;
+            case FieldType.Color: return Color.ToString();
+            case FieldType.Sex:
+                if (this.Sex.HasValue)
+                {
+                    return this.Sex.ToString();
+                }
+                break;
+            case FieldType.Quality: return this.Quality.ToString();
+            case FieldType.LV: return this.LV.ToString();
+        }
+        Debug.LogError("FieldType:" + type + "类型错误");
+        return null;
+    }
 }

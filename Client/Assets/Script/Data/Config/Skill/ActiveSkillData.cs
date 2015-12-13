@@ -6,6 +6,9 @@
     }
     public SelectionTargetType SelectionTarget;//选择目标的方式
     public AttributeType? SelectionTargetRefrenceAttribute;//选择目标参考属性
+    public FieldType? SelectionTargetRefrenceField;//选择目标参考字段
+    public string SelectionTargetRefrenceFieldValue;//选择目标参考字段
+
     public SkillRangeType SkillRange;//技能范围
 
     /*
@@ -132,7 +135,7 @@
     {
         if (this.SkillRange == SkillRangeType.Cross)
         {
-            return this.RangeValue[0];
+            return this.RangeValue[3];
         }
         return 0;
     }
