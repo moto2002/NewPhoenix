@@ -6,16 +6,15 @@
     }
     public SelectionTargetType SelectionTarget;//选择目标的方式
     public AttributeType? SelectionTargetRefrenceAttribute;//选择目标参考属性
-    public FieldType? SelectionTargetRefrenceField;//选择目标参考字段
     public string SelectionTargetRefrenceFieldValue;//选择目标参考字段
 
     public SkillRangeType SkillRange;//技能范围
 
     /*
-     1.当 SkillRange 为 Cross 时
+      当 SkillRange 为 Cross 时
      eg:1,1,2,2 (上下左右)
 
-     2.当 SkillRange 为 Rect 时
+      当 SkillRange 为 Rect 时
      eg:2,3
 
      3.当 SkillRange 为 Point 时

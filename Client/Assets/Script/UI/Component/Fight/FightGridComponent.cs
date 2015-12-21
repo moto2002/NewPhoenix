@@ -39,7 +39,7 @@ public class FightGridComponent : ComponentBase
     /// <summary>
     /// 暂时设定两个阵营一样宽，所以用一个变量来表示
     /// </summary>
-    public byte ZGridCouunt
+    public byte ZGridCount
     {
         get { return this.PlayerZGridCount; }
     }

@@ -31,12 +31,14 @@ public enum SelectionTargetType : byte
     /// <summary>
     /// 最多目标
     /// SkillRangeType: 0,1
+    /// 2015.12.16 23:48-log:这种类型空格子字段（IncludeEmpty）必须为false
     /// </summary>
     Max = 4,
 
     /// <summary>
     /// 对面
     /// SkillRangeType: 1
+    /// 2015.12.16 23:48-log:对面打完，打旁边列，先左后右
     /// </summary>
     Opposite = 5,
 

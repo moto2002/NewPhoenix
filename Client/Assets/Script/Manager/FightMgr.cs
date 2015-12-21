@@ -516,11 +516,25 @@ public class FightMgr : MonoBehaviour
     //2015.12.03-log:需要弄清楚是否需要筛选掉已经死亡的
     //2015.12.14-log:筛选掉已经死亡的
 
-    private List<ActorBevBase> GetFindList(ActorType sourceType, EffectTargetType effectTarget)
+    /// <summary>
+    /// 获取查找列表
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns>查找列表</returns>
+    private List<ActorBevBase> GetFindList(ActorType type)
+    {
+        return this.GetFindList(type == ActorType.Player);
+    }
+
+    /// <summary>
+    /// 获取查找列表
+    /// </summary>
+    /// <param name="isPlayer"></param>
+    /// <returns>查找列表</returns>
+    private List<ActorBevBase> GetFindList(bool isPlayer)
     {
         List<ActorBevBase> findList = null;
-        if ((sourceType == ActorType.Enemy && effectTarget == EffectTargetType.Rival)
-            || (sourceType == ActorType.Player && effectTarget == EffectTargetType.Friend))
+        if (isPlayer)
         {
             findList = this.PlayerList;
         }
@@ -533,15 +547,40 @@ public class FightMgr : MonoBehaviour
     }
 
     /// <summary>
+    /// 获取查找列表
+    /// </summary>
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="effectTarget">作用阵营</param>
+    /// <returns>查找列表</returns>
+    private List<ActorBevBase> GetFindList(ActorType sourceType, EffectTargetType effectTarget)
+    {
+        bool isPlayer = (sourceType == ActorType.Enemy && effectTarget == EffectTargetType.Rival)
+            || (sourceType == ActorType.Player && effectTarget == EffectTargetType.Friend);
+        return this.GetFindList(isPlayer);
+    }
+
+    /// <summary>
+    /// 获取所有目标列表
+    /// </summary>
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="effectTarget">作用阵营</param>
+    /// <returns>所有目标列表</returns>
+    public List<ActorBevBase> FindAll(ActorType sourceType, EffectTargetType effectTarget)
+    {
+        return this.GetFindList(sourceType, effectTarget);
+    }
+
+    /// <summary>
     /// 查找最近的目标列表
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="count"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public List<ActorBevBase> FindNear(ActorBevBase source, byte count, EffectTargetType effectTarget)
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="sourceGrid">源的格子数据</param>
+    /// <param name="count">查找数量</param>
+    /// <param name="effectTarget">查找阵营</param>
+    /// <returns>找到的目标列表</returns>
+    public List<ActorBevBase> FindNear(ActorType sourceType, GridData sourceGrid, byte count, EffectTargetType effectTarget)
     {
-        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        List<ActorBevBase> findList = this.GetFindList(sourceType, effectTarget);
         if (findList == null || findList.Count == 0)
         {
             return null;
@@ -553,12 +592,11 @@ public class FightMgr : MonoBehaviour
         List<ActorBevBase> targetList = new List<ActorBevBase>();
         if (effectTarget == EffectTargetType.Rival)
         {
-            for (int i = 0; i < count; i++)
+            for (byte i = 0; i < count; i++)
             {
                 ActorBevBase target = null;
-                for (int j = 0; j < findList.Count; j++)
+                foreach (var tmpTarget in findList)
                 {
-                    ActorBevBase tmpTarget = findList[j];
                     if (target == null)
                     {
                         target = tmpTarget;
@@ -570,7 +608,7 @@ public class FightMgr : MonoBehaviour
                             target = tmpTarget;
                         }
                         else if (tmpTarget.GridData.ZGrid == target.GridData.ZGrid
-                            && Mathf.Abs(tmpTarget.GridData.XGrid - source.GridData.XGrid) <= Mathf.Abs(tmpTarget.GridData.XGrid - source.GridData.XGrid)
+                            && Mathf.Abs(tmpTarget.GridData.XGrid - sourceGrid.XGrid) <= Mathf.Abs(tmpTarget.GridData.XGrid - sourceGrid.XGrid)
                             && tmpTarget.GridData.XGrid < target.GridData.XGrid)
                         {
                             target = tmpTarget;
@@ -583,14 +621,13 @@ public class FightMgr : MonoBehaviour
         }
         else if (effectTarget == EffectTargetType.Friend)
         {
-            for (int i = 0; i < count; i++)
+            for (byte i = 0; i < count; i++)
             {
                 ActorBevBase target = null;
                 byte minDistance = byte.MaxValue;
-                for (int j = 0; j < findList.Count; j++)
+                foreach (var tmpTarget in findList)
                 {
-                    ActorBevBase tmpTarget = findList[j];
-                    byte distance = (byte)(source.GridData.CalculateDistanceMagnitude(tmpTarget.GridData));
+                    byte distance = (byte)(sourceGrid.CalculateDistanceMagnitude(tmpTarget.GridData));
                     if (target == null)
                     {
                         target = tmpTarget;
@@ -620,13 +657,14 @@ public class FightMgr : MonoBehaviour
     /// <summary>
     /// 查找最远的目标列表
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="count"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public List<ActorBevBase> FindFar(ActorBevBase source, byte count, EffectTargetType effectTarget)
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="sourceGrid">源的格子数据</param>
+    /// <param name="count">查找数量</param>
+    /// <param name="effectTarget">查找阵营</param>
+    /// <returns>找到的目标列表</returns>
+    public List<ActorBevBase> FindFar(ActorType sourceType, GridData sourceGrid, byte count, EffectTargetType effectTarget)
     {
-        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        List<ActorBevBase> findList = this.GetFindList(sourceType, effectTarget);
         if (findList == null || findList.Count == 0)
         {
             return null;
@@ -638,12 +676,11 @@ public class FightMgr : MonoBehaviour
         List<ActorBevBase> targetList = new List<ActorBevBase>();
         if (effectTarget == EffectTargetType.Rival)
         {
-            for (int i = 0; i < count; i++)
+            for (byte i = 0; i < count; i++)
             {
                 ActorBevBase target = null;
-                for (int j = 0; j < findList.Count; j++)
+                foreach (var tmpTarget in findList)
                 {
-                    ActorBevBase tmpTarget = findList[j];
                     if (target == null)
                     {
                         target = tmpTarget;
@@ -655,7 +692,7 @@ public class FightMgr : MonoBehaviour
                             target = tmpTarget;
                         }
                         else if (tmpTarget.GridData.ZGrid == target.GridData.ZGrid
-                            && Mathf.Abs(tmpTarget.GridData.XGrid - source.GridData.XGrid) <= Mathf.Abs(tmpTarget.GridData.XGrid - source.GridData.XGrid)
+                            && Mathf.Abs(tmpTarget.GridData.XGrid - sourceGrid.XGrid) <= Mathf.Abs(tmpTarget.GridData.XGrid - sourceGrid.XGrid)
                             && tmpTarget.GridData.XGrid < target.GridData.XGrid)
                         {
                             target = tmpTarget;
@@ -668,14 +705,14 @@ public class FightMgr : MonoBehaviour
         }
         else if (effectTarget == EffectTargetType.Friend)
         {
-            for (int i = 0; i < count; i++)
+            for (byte i = 0; i < count; i++)
             {
                 ActorBevBase target = null;
                 byte maxDistance = byte.MaxValue;
-                for (int j = 0; j < findList.Count; j++)
+                for (byte j = 0; j < findList.Count; j++)
                 {
                     ActorBevBase tmpTarget = findList[j];
-                    byte distance = (byte)(source.GridData.CalculateDistanceMagnitude(tmpTarget.GridData));
+                    byte distance = sourceGrid.CalculateDistanceMagnitude(tmpTarget.GridData);
                     if (target == null)
                     {
                         target = tmpTarget;
@@ -705,13 +742,14 @@ public class FightMgr : MonoBehaviour
     /// <summary>
     /// 查找属性最小的目标列表
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="count"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public List<ActorBevBase> FindMinAttribute(ActorBevBase source, byte count, EffectTargetType effectTarget,AttributeType attribute)
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="count">查找数量</param>
+    /// <param name="effectTarget">查找阵营</param>
+    /// <param name="attribute">参照属性</param>
+    /// <returns>找到的目标列表</returns>
+    public List<ActorBevBase> FindMinAttribute(ActorType sourceType, byte count, EffectTargetType effectTarget, AttributeType attribute)
     {
-        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        List<ActorBevBase> findList = this.GetFindList(sourceType, effectTarget);
         if (findList == null || findList.Count == 0)
         {
             return null;
@@ -721,12 +759,11 @@ public class FightMgr : MonoBehaviour
             return findList;
         }
         List<ActorBevBase> targetList = new List<ActorBevBase>();
-        for (int i = 0; i < count; i++)
+        for (byte i = 0; i < count; i++)
         {
             ActorBevBase target = null;
-            for (int j = 0; j < findList.Count; j++)
+            foreach (var tmpTarget in findList)
             {
-                ActorBevBase tmpTarget = findList[j];
                 if (target == null)
                 {
                     target = tmpTarget;
@@ -753,13 +790,14 @@ public class FightMgr : MonoBehaviour
     /// <summary>
     /// 查找属性最大的目标列表
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="count"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public List<ActorBevBase> FindMaxAttribute(ActorBevBase source, byte count, EffectTargetType effectTarget, AttributeType attribute)
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="count">查找数量</param>
+    /// <param name="effectTarget">查找阵营</param>
+    /// <param name="attribute">参照属性</param>
+    /// <returns>找到的目标列表</returns>
+    public List<ActorBevBase> FindMaxAttribute(ActorType sourceType, byte count, EffectTargetType effectTarget, AttributeType attribute)
     {
-        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        List<ActorBevBase> findList = this.GetFindList(sourceType, effectTarget);
         if (findList == null || findList.Count == 0)
         {
             return null;
@@ -769,12 +807,11 @@ public class FightMgr : MonoBehaviour
             return findList;
         }
         List<ActorBevBase> targetList = new List<ActorBevBase>();
-        for (int i = 0; i < count; i++)
+        for (byte i = 0; i < count; i++)
         {
             ActorBevBase target = null;
-            for (int j = 0; j < findList.Count; j++)
+            foreach (var tmpTarget in findList)
             {
-                ActorBevBase tmpTarget = findList[j];
                 if (target == null)
                 {
                     target = tmpTarget;
@@ -798,29 +835,34 @@ public class FightMgr : MonoBehaviour
         return targetList;
     }
 
-
     /// <summary>
     /// 查找对面目标列表
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="count"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public ActorBevBase FindOpposite(ActorBevBase source)
+    /// 对面打完，打旁边列，先左后右
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="sourceGrid">源的格子数据</param>
+    /// <returns>找到的目标</returns>
+    public ActorBevBase FindOpposite(ActorType sourceType, GridData sourceGrid)
     {
-        List<ActorBevBase> findList = this.GetFindList(source.Type, EffectTargetType.Rival);
+        List<ActorBevBase> findList = this.GetFindList(sourceType, EffectTargetType.Rival);
         if (findList == null || findList.Count == 0)
         {
             return null;
         }
         ActorBevBase target = null;
-        for (int j = 0; j < findList.Count; j++)
+        foreach (var tmpTarget in findList)
         {
-            ActorBevBase tmpTarget = findList[j];
-            if (tmpTarget.GridData.XGrid == source.GridData.XGrid
-                && (target == null) ? true : tmpTarget.GridData.ZGrid < target.GridData.ZGrid)
+            if (target == null)
             {
                 target = tmpTarget;
+            }
+            else
+            {
+                // XGrid : 0 1 2 3 4
+                if (Mathf.Abs(tmpTarget.GridData.XGrid - sourceGrid.XGrid) <= Mathf.Abs(target.GridData.XGrid - sourceGrid.XGrid)
+                    && tmpTarget.GridData.XGrid <= target.GridData.XGrid && tmpTarget.GridData.ZGrid < target.GridData.ZGrid)
+                {
+                    target = tmpTarget;
+                }
             }
         }
         return target;
@@ -829,13 +871,13 @@ public class FightMgr : MonoBehaviour
     /// <summary>
     /// 查找随机目标列表
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="count"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public List<ActorBevBase> FindRandom(ActorBevBase source, byte count, EffectTargetType effectTarget)
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="count">查找数量</param>
+    /// <param name="effectTarget">查找阵营</param>
+    /// <returns>找到的目标列表</returns>
+    public List<ActorBevBase> FindRandom(ActorType sourceType, byte count, EffectTargetType effectTarget)
     {
-        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        List<ActorBevBase> findList = this.GetFindList(sourceType, effectTarget);
         if (findList == null || findList.Count == 0)
         {
             return null;
@@ -845,7 +887,7 @@ public class FightMgr : MonoBehaviour
             return findList;
         }
         List<ActorBevBase> targetList = new List<ActorBevBase>();
-        for (int i = 0; i < count; i++)
+        for (byte i = 0; i < count; i++)
         {
             ActorBevBase target = findList[Random.Range(0, findList.Count)];
             findList.Remove(target);
@@ -857,13 +899,15 @@ public class FightMgr : MonoBehaviour
     /// <summary>
     /// 查找指定字段目标列表
     /// </summary>
-    /// <param name="source"></param>
-    /// <param name="count"></param>
-    /// <param name="effectTarget"></param>
-    /// <returns></returns>
-    public List<ActorBevBase> FindField(ActorBevBase source, byte count, EffectTargetType effectTarget, FieldType field, string fieldValue)
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="count">查找数量</param>
+    /// <param name="effectTarget">查找阵营</param>
+    /// <param name="field">参照字段</param>
+    /// <param name="fieldValue">参照字段的值</param>
+    /// <returns>找到的目标列表</returns>
+    public List<ActorBevBase> FindField(ActorType sourceType, byte count, EffectTargetType effectTarget, AttributeType field, string fieldValue)
     {
-        List<ActorBevBase> findList = this.GetFindList(source.Type, effectTarget);
+        List<ActorBevBase> findList = this.GetFindList(sourceType, effectTarget);
         if (findList == null || findList.Count == 0)
         {
             return null;
@@ -873,12 +917,11 @@ public class FightMgr : MonoBehaviour
             return findList;
         }
         List<ActorBevBase> targetList = new List<ActorBevBase>();
-        for (int i = 0; i < count; i++)
+        for (byte i = 0; i < count; i++)
         {
             ActorBevBase target = null;
-            for (int j = 0; j < findList.Count; j++)
+            foreach (var tmpTarget in findList)
             {
-                ActorBevBase tmpTarget = findList[j];
                 if (tmpTarget.ActorLogicData.GetFieldValueByType(field).Equals(fieldValue))
                 {
                     if (target == null)
@@ -893,6 +936,212 @@ public class FightMgr : MonoBehaviour
             }
             findList.Remove(target);
             targetList.Add(target);
+        }
+        return targetList;
+    }
+
+    /// <summary>
+    /// 查找最大矩形目标列表
+    /// </summary>
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="effectTarget">查找阵营</param>
+    /// <param name="width">上（X）</param>
+    /// <param name="height">宽(Z)</param>
+    /// <returns>找到的目标列表</returns>
+    public List<ActorBevBase> FindMaxRect(ActorType sourceType, EffectTargetType effectTarget, byte width, byte height)
+    {
+        List<ActorBevBase> findList = this.GetFindList(sourceType, effectTarget);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        if (width >= this.m_GridComp.XGridCount && height >= this.m_GridComp.ZGridCount)
+        {
+            return findList;
+        }
+
+        //List<ActorBevBase> targetList = null;
+        //for (byte x = 0; x <= this.m_GridComp.XGridCount - width; x++)
+        //{
+        //    for (byte z = 0; z <= this.m_GridComp.ZGridCount - height; z++)
+        //    {
+        //        List<ActorBevBase> tmpTargetList = new List<ActorBevBase>();
+        //        foreach (var tmpTarget in findList)
+        //        {
+        //            if (x <= tmpTarget.GridData.XGrid && tmpTarget.GridData.XGrid < x + width
+        //                && z <= tmpTarget.GridData.ZGrid && tmpTarget.GridData.ZGrid < z + height)
+        //            {
+        //                tmpTargetList.Add(tmpTarget);
+        //            }
+        //        }
+        //        if (targetList == null || tmpTargetList.Count > targetList.Count)
+        //        {
+        //            targetList = tmpTargetList;
+        //        }
+        //    }
+        //}
+        //return targetList;
+
+        return this.GetTargetListWithRect(findList, 0, (byte)(this.m_GridComp.XGridCount - width), 0, (byte)(this.m_GridComp.ZGridCount - height), width, height);
+    }
+
+    /// <summary>
+    /// 查找最大十字形目标列表
+    /// </summary>
+    /// <param name="sourceType">源的类型</param>
+    /// <param name="effectTarget">查找阵营</param>
+    /// <param name="top">上</param>
+    /// <param name="bottom">下</param>
+    /// <param name="left">左</param>
+    /// <param name="right">右</param>
+    /// <returns>找到的目标列表</returns>
+    public List<ActorBevBase> FindMaxCross(ActorType sourceType, EffectTargetType effectTarget, byte top, byte bottom, byte left, byte right)
+    {
+        List<ActorBevBase> findList = this.GetFindList(sourceType, effectTarget);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        List<ActorBevBase> targetList = null;
+        for (byte x = 0; x < this.m_GridComp.XGridCount; x++)
+        {
+            for (byte z = 0; z < this.m_GridComp.ZGridCount; z++)
+            {
+                List<ActorBevBase> tmpTargetList = new List<ActorBevBase>();
+                foreach (var tmpTarget in findList)
+                {
+                    if (tmpTarget.GridData.XGrid == x
+                        && (z - bottom) <= tmpTarget.GridData.ZGrid
+                        && tmpTarget.GridData.ZGrid <= (z + top))
+                    {
+                        tmpTargetList.Add(tmpTarget);
+
+                    }
+                    else if (tmpTarget.GridData.ZGrid == z
+                      && (x - left) <= tmpTarget.GridData.XGrid
+                      && tmpTarget.GridData.XGrid <= (x + right))
+                    {
+                        tmpTargetList.Add(tmpTarget);
+                    }
+                }
+                if (targetList == null || tmpTargetList.Count > targetList.Count)
+                {
+                    targetList = tmpTargetList;
+                }
+            }
+        }
+        return targetList;
+    }
+
+    /// <summary>
+    /// 通过矩形的方式查找目标
+    /// </summary>
+    /// <param name="sourceList">源列表</param>
+    /// <param name="width">长</param>
+    /// <param name="height">宽</param>
+    /// <returns>目标列表</returns>
+    public List<ActorBevBase> FindTargetWithRect(List<ActorBevBase> sourceList, byte width, byte height)
+    {
+        List<ActorBevBase> findList = this.GetFindList(sourceList[0].Type);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+        List<ActorBevBase> totalTargetList = new List<ActorBevBase>(sourceList);
+        foreach (var source in sourceList)
+        {
+            byte startX = (byte)Mathf.Max(0, source.GridData.XGrid - width + 1);
+            byte startZ = (byte)Mathf.Max(0, source.GridData.ZGrid - height + 1);
+            List<ActorBevBase> targetList = this.GetTargetListWithRect(findList, startX, source.GridData.XGrid, startZ, source.GridData.ZGrid, width, height);
+            foreach (var target in targetList)
+            {
+                if (!totalTargetList.Contains(target))
+                {
+                    totalTargetList.Add(target);
+                }
+            }
+        }
+        return totalTargetList;
+    }
+
+    /// <summary>
+    /// 通过十字形的方式查找目标
+    /// </summary>
+    /// <param name="sourceList">源列表</param>
+    /// <param name="top">上</param>
+    /// <param name="bottom">下</param>
+    /// <param name="left">左</param>
+    /// <param name="right">右</param>
+    /// <returns>目标列表</returns>
+    public List<ActorBevBase> FindTargetWithCross(List<ActorBevBase> sourceList, byte top, byte bottom, byte left, byte right)
+    {
+        List<ActorBevBase> findList = this.GetFindList(sourceList[0].Type);
+        if (findList == null || findList.Count == 0)
+        {
+            return null;
+        }
+
+        List<ActorBevBase> totalTargetList = new List<ActorBevBase>(sourceList);
+        foreach (var source in sourceList)
+        {
+            foreach (var tmpTarget in findList)
+            {
+                if (tmpTarget.GridData.XGrid == source.GridData.XGrid
+                    && (source.GridData.ZGrid - bottom) <= tmpTarget.GridData.ZGrid
+                    && tmpTarget.GridData.ZGrid <= (source.GridData.ZGrid + top))
+                {
+                    if (!totalTargetList.Contains(tmpTarget))
+                    {
+                        totalTargetList.Add(tmpTarget);
+                    }
+
+                }
+                else if (tmpTarget.GridData.ZGrid == source.GridData.ZGrid
+                  && (source.GridData.XGrid - left) <= tmpTarget.GridData.XGrid
+                  && tmpTarget.GridData.XGrid <= (source.GridData.XGrid + right))
+                {
+                    if (!totalTargetList.Contains(tmpTarget))
+                    {
+                        totalTargetList.Add(tmpTarget);
+                    }
+                }
+            }
+        }
+        return totalTargetList;
+    }
+
+    /// <summary>
+    /// 在指定范围内通过矩形的方式获得目标列表
+    /// </summary>
+    /// <param name="findList">查找列表</param>
+    /// <param name="startX">起始X</param>
+    /// <param name="endX">结束X</param>
+    /// <param name="startZ">起始Z</param>
+    /// <param name="endZ">结束Z</param>
+    /// <param name="width">长</param>
+    /// <param name="height">宽</param>
+    /// <returns>目标列表</returns>
+    private List<ActorBevBase> GetTargetListWithRect(List<ActorBevBase> findList, byte startX, byte endX, byte startZ, byte endZ, byte width, byte height)
+    {
+        List<ActorBevBase> targetList = null;
+        for (byte x = startX; x <= endX; x++)
+        {
+            for (byte z = startZ; z <= endZ; z++)
+            {
+                List<ActorBevBase> tmpTargetList = new List<ActorBevBase>();
+                foreach (var tmpTarget in findList)
+                {
+                    if (x <= tmpTarget.GridData.XGrid && tmpTarget.GridData.XGrid < x + width
+                        && z <= tmpTarget.GridData.ZGrid && tmpTarget.GridData.ZGrid < z + height)
+                    {
+                        tmpTargetList.Add(tmpTarget);
+                    }
+                }
+                if (targetList == null || tmpTargetList.Count > targetList.Count)
+                {
+                    targetList = tmpTargetList;
+                }
+            }
         }
         return targetList;
     }

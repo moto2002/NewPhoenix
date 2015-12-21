@@ -154,4 +154,44 @@ public enum AttributeType : byte
     MagicDamageCounteractAddition = 27,
     #endregion
 
+    #region 字段
+
+    ID = 28,
+
+    /// <summary>
+    /// 名字
+    /// </summary>
+    Name = 29,
+
+    /// <summary>
+    /// 职业
+    /// </summary>
+    Profession = 30,
+
+    /// <summary>
+    /// 国籍
+    /// </summary>
+    Nationality = 31,
+
+    /// <summary>
+    /// 颜色
+    /// </summary>
+    Color = 32,
+
+    /// <summary>
+    /// 性别
+    /// </summary>
+    Sex =33,
+
+    /// <summary>
+    /// 品质
+    /// </summary>
+    Quality = 34,
+
+    /// <summary>
+    /// 等级
+    /// </summary>
+    LV = 35,
+    #endregion
+
 }

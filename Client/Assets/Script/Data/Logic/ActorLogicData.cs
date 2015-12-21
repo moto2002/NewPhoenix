@@ -167,33 +167,33 @@ public class ActorLogicData
         return float.MinValue;
     }
 
-    public string GetFieldValueByType(FieldType type)
+    public string GetFieldValueByType(AttributeType type)
     {
         switch (type)
         {
-            case FieldType.ID: return this.ID.ToString();
-            case FieldType.Name: return this.Name;
-            case FieldType.Profession:
+            case AttributeType.ID: return this.ID.ToString();
+            case AttributeType.Name: return this.Name;
+            case AttributeType.Profession:
                 if (this.Profession.HasValue)
                 {
                     return this.Profession.Value.ToString();
                 }
                 break;
-            case FieldType.Nationality:
+            case AttributeType.Nationality:
                 if (this.Nationality.HasValue)
                 {
                     return this.Nationality.Value.ToString();
                 }
                 break;
-            case FieldType.Color: return Color.ToString();
-            case FieldType.Sex:
+            case AttributeType.Color: return Color.ToString();
+            case AttributeType.Sex:
                 if (this.Sex.HasValue)
                 {
                     return this.Sex.ToString();
                 }
                 break;
-            case FieldType.Quality: return this.Quality.ToString();
-            case FieldType.LV: return this.LV.ToString();
+            case AttributeType.Quality: return this.Quality.ToString();
+            case AttributeType.LV: return this.LV.ToString();
         }
         Debug.LogError("FieldType:" + type + "类型错误");
         return null;
